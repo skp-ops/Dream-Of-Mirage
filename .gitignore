@@ -1,12 +1,13 @@
 # Godot
-.import/
 export.cfg
 export_presets.cfg
+.godot/imported/
 .godot/mono/
 .godot/shader_cache/
 .godot/editor/
 .godot/*cache.bin
 .godot/*cache.cfg
+.godot/uid_cache.bin
 
 # .NET / C#
 bin/

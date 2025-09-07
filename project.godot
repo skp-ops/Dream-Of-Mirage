@@ -11,8 +11,15 @@ config_version=5
 [application]
 
 config/name="Dream Of Mirage"
+run/main_scene="uid://ce7l6ncxejbed"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/borderless=true
 
 [dotnet]
 
@@ -20,5 +27,6 @@ project/assembly_name="Dream Of Mirage"
 
 [rendering]
 
+textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"

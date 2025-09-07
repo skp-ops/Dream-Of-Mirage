@@ -1,4 +1,6 @@
-[gd_scene format=3 uid="uid://ce7l6ncxejbed"]
+[gd_scene load_steps=2 format=3 uid="uid://ce7l6ncxejbed"]
+
+[ext_resource type="Texture2D" uid="uid://cigkoy3o7sh5e" path="res://assets/ui/ENTER_BG.PNG" id="1_t86xw"]
 
 [node name="EnterUI" type="Control"]
 layout_mode = 3
@@ -7,3 +9,40 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+metadata/_edit_lock_ = true
+metadata/_edit_vertical_guides_ = [960.0]
+metadata/_edit_horizontal_guides_ = [540.0]
+
+[node name="EnterBg" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+texture = ExtResource("1_t86xw")
+metadata/_edit_lock_ = true
+
+[node name="MenuVBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+offset_left = 704.0
+offset_top = 800.0
+offset_right = 1212.0
+offset_bottom = 978.0
+alignment = 1
+
+[node name="NewGameButton" type="Button" parent="MenuVBox"]
+layout_mode = 2
+text = "New Game"
+
+[node name="LoadGameButton" type="Button" parent="MenuVBox"]
+custom_minimum_size = Vector2(0.4, 1.075)
+layout_mode = 2
+text = "Load Game"
+
+[node name="SettingButton" type="Button" parent="MenuVBox"]
+custom_minimum_size = Vector2(0.4, 1.075)
+layout_mode = 2
+text = "Setting"
+
+[node name="ExitButton" type="Button" parent="MenuVBox"]
+custom_minimum_size = Vector2(0.4, 1.075)
+layout_mode = 2
+text = "Exit"
