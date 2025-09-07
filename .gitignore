@@ -4,6 +4,9 @@ export.cfg
 export_presets.cfg
 .godot/mono/
 .godot/shader_cache/
+.godot/editor/
+.godot/*cache.bin
+.godot/*cache.cfg
 
 # .NET / C#
 bin/
