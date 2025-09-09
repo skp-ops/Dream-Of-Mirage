@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://brduykrf0e8ay" path="res://code/ui/Enter.cs" id="1_skug7"]
 [ext_resource type="Texture2D" uid="uid://cigkoy3o7sh5e" path="res://assets/ui/ENTER_BG.PNG" id="1_t86xw"]
-[ext_resource type="Script" uid="uid://dfu6tm1r5545d" path="res://tscn/ui/NewGameButton.cs" id="3_qlx0c"]
+[ext_resource type="Script" uid="uid://dfu6tm1r5545d" path="res://code/tool/NewGameButton.cs" id="3_qlx0c"]
 
 [node name="EnterUI" type="Control"]
 layout_mode = 3
@@ -12,23 +12,23 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_skug7")
-metadata/_edit_lock_ = true
-metadata/_edit_vertical_guides_ = [960.0]
-metadata/_edit_horizontal_guides_ = [540.0]
+metadata/_edit_vertical_guides_ = [320.0]
+metadata/_edit_horizontal_guides_ = [216.0]
 
 [node name="EnterBg" type="TextureRect" parent="."]
 layout_mode = 0
-offset_right = 1920.0
-offset_bottom = 1080.0
+offset_left = -136.0
+offset_top = -88.0
+offset_right = 888.0
+offset_bottom = 424.0
 texture = ExtResource("1_t86xw")
-metadata/_edit_lock_ = true
 
 [node name="MenuVBox" type="VBoxContainer" parent="."]
 layout_mode = 2
-offset_left = 704.0
-offset_top = 800.0
-offset_right = 1212.0
-offset_bottom = 978.0
+offset_left = 208.0
+offset_top = 216.0
+offset_right = 432.0
+offset_bottom = 352.0
 alignment = 1
 
 [node name="NewGameButton" type="Button" parent="MenuVBox"]

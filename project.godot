@@ -11,16 +11,19 @@ config_version=5
 [application]
 
 config/name="Dream Of Mirage"
-run/main_scene="uid://ce7l6ncxejbed"
+run/main_scene="uid://br2dsnd2xagpm"
 config/features=PackedStringArray("4.4", "C#", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [display]
 
-window/size/viewport_width=1920
-window/size/viewport_height=1080
-window/size/borderless=true
+window/size/viewport_width=640
+window/size/viewport_height=360
 window/size/resizable=false
+window/size/borderless=true
+window/size/window_width_override=1920
+window/size/window_height_override=1080
+window/stretch/mode="canvas_items"
 
 [dotnet]
 
