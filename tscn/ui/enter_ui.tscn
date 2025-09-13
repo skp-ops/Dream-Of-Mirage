@@ -1,8 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://ce7l6ncxejbed"]
+[gd_scene load_steps=3 format=3 uid="uid://ce7l6ncxejbed"]
 
 [ext_resource type="Script" uid="uid://brduykrf0e8ay" path="res://code/ui/Enter.cs" id="1_skug7"]
 [ext_resource type="Texture2D" uid="uid://cigkoy3o7sh5e" path="res://assets/ui/ENTER_BG.PNG" id="1_t86xw"]
-[ext_resource type="Script" uid="uid://dfu6tm1r5545d" path="res://code/tool/NewGameButton.cs" id="3_qlx0c"]
 
 [node name="EnterUI" type="Control"]
 layout_mode = 3
@@ -34,7 +33,6 @@ alignment = 1
 [node name="NewGameButton" type="Button" parent="MenuVBox"]
 layout_mode = 2
 text = "New Game"
-script = ExtResource("3_qlx0c")
 
 [node name="LoadGameButton" type="Button" parent="MenuVBox"]
 custom_minimum_size = Vector2(0.4, 1.075)
@@ -50,5 +48,3 @@ text = "Setting"
 custom_minimum_size = Vector2(0.4, 1.075)
 layout_mode = 2
 text = "Exit"
-
-[connection signal="pressed" from="MenuVBox/NewGameButton" to="MenuVBox/NewGameButton" method="OnNewGameButtonPressed"]
