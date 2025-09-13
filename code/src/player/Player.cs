@@ -40,6 +40,7 @@ public partial class Player : CharacterBody2D
 		jumpVelocity = -200.0f;
 		animatedSprite = GetNode<AnimationPlayer>("AnimationPlayer");
 		sprite = GetNode<Sprite2D>("Sprite2D");
+		CheckNode();
 	}
 
 	public override void _Process(double delta)
@@ -103,7 +104,8 @@ public partial class Player : CharacterBody2D
 	{
 		if (!IsOnFloor())
 		{
-			sprite.FlipH = direction < 0;
+			if (direction != 0)
+				sprite.FlipH = direction < 0;
 			animatedSprite.Play("jump");
 		}
 		else if (direction == 0)
