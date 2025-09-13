@@ -31,7 +31,7 @@ public partial class Forest1 : Node2D
 	public void SetCameraLimits()
 	{
 		// Calculate the map bounds in pixels
-		Rect2 mapBounds = tileMap.GetUsedRect();
+		Rect2 mapBounds = tileMap.GetUsedRect().Grow(-1);
 		Logger.LogInfo($"Map Bounds: {mapBounds}");
 
 		Vector2 cellSize = tileMap.TileSet.TileSize; // Get the parent TileMap's CellSize

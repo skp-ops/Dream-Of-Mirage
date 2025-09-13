@@ -5,6 +5,12 @@ public partial class Player : CharacterBody2D
 {
 	public float speed;
 	public float jumpVelocity;
+	public float acceleration;
+
+	/*
+	I don't want to use coyote time. (reaction time is infinite)
+	when the player is not on the floor, they can always jump, so coyote time is not needed.
+	*/
 	public int jumpCount = 0;
 	private bool wasOnFloor = false;
 	// Jump buffer
@@ -37,7 +43,8 @@ public partial class Player : CharacterBody2D
 	public override void _Ready()
 	{
 		speed = 100.0f;
-		jumpVelocity = -200.0f;
+		jumpVelocity = -300.0f;
+		acceleration = speed / 0.1f;
 		animatedSprite = GetNode<AnimationPlayer>("AnimationPlayer");
 		sprite = GetNode<Sprite2D>("Sprite2D");
 		CheckNode();
@@ -52,11 +59,11 @@ public partial class Player : CharacterBody2D
 		// horizontal movement
 		if (direction != 0)
 		{
-			velocity.X = direction * speed;
+			velocity.X = Mathf.MoveToward(velocity.X, direction * speed, acceleration * (float)delta);
 		}
 		else
 		{
-			velocity.X = Mathf.MoveToward(velocity.X, 0, speed);
+			velocity.X = Mathf.MoveToward(velocity.X, 0, acceleration * (float)delta);
 		}
 
 		// Send a jump request, reset jump buffer counter
@@ -80,7 +87,7 @@ public partial class Player : CharacterBody2D
 		{
 			jumpCount--;
 			velocity.Y = jumpVelocity;
-			jumpBufferCounter = 0f; // 跳跃后清空缓冲
+			jumpBufferCounter = 0f;
 		}
 
 		// only reset jump count when landing
