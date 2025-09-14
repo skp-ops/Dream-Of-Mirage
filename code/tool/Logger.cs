@@ -39,7 +39,8 @@ public partial class Logger
 	{
 		// format log message
 		string timeStamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss").PadLeft(20);
-		string fileInfo = (Path.GetFileName(logFile) + $":{lineNumber}").PadLeft(20);
+		string fileInfoRaw = Path.GetFileName(logFile) + $":{lineNumber}";
+		string fileInfo = (fileInfoRaw.Length > 20) ? fileInfoRaw.Substring(fileInfoRaw.Length - 20) : fileInfoRaw.PadLeft(20);
 		string logLevel = level.ToString().PadLeft(8);
 		string combinedMessage = "";
 		if (messages == null || messages.Length == 0)
