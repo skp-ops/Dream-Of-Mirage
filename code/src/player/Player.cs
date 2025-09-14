@@ -20,7 +20,7 @@ public partial class Player : CharacterBody2D
 	public override void _Ready()
 	{
 		speed = 100.0f;
-		jumpVelocity = -300.0f;
+		jumpVelocity = -285.0f;
 		acceleration = speed / 0.1f;
 		// initial state
 		jumpCount = 2;

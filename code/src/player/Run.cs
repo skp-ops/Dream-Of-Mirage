@@ -8,12 +8,15 @@ public partial class Run : State
     // AnimationPlayer and Sprite2D
     private AnimationPlayer animationPlayer;
     private Sprite2D sprite;
+    // Reference to Jump state to manage remaining air jumps on walk-off
+    private Jump jumpState;
 
     public override void _Ready()
     {
         pNode = this.GetParent().GetParent() as Player; // Run -> FSM -> Player
         animationPlayer = pNode.GetNode<AnimationPlayer>("AnimationPlayer");
         sprite = pNode.GetNode<Sprite2D>("Sprite2D");
+        jumpState = this.GetParent().GetNode<Jump>("Jump");
         Logger.LogInfo("Query Player Node in [Run] State done...");
     }
 
@@ -43,6 +46,14 @@ public partial class Run : State
         {
             Logger.LogError("sprite2D: " + ex.Message);
         }
+        try
+        {
+            Assert.IsNoneNode<Jump>(jumpState);
+        }
+        catch (NullReferenceException ex)
+        {
+            Logger.LogError("jumpState: " + ex.Message);
+        }
     }
 
     public override void StateEnter()
@@ -57,7 +68,8 @@ public partial class Run : State
     {
         if (pNode.IsOnFloor() == false)
         {
-            fsm.ChangeState("Jump");
+            jumpState.jumpCount = 2;
+            fsm.ChangeState("Fall");
             return;
         }
 
@@ -83,11 +95,6 @@ public partial class Run : State
         {
             velocity.X = Mathf.MoveToward(velocity.X, 0, pNode.acceleration * (float)delta);
         }
-        // apply gravity if not on floor (e.g., walking off a ledge before state switches)
-        if (pNode.IsOnFloor() == false)
-        {
-            velocity.Y += ConstVar.GRAVITY * (float)delta;
-        }
         pNode.Velocity = velocity;
         if (animationPlayer.CurrentAnimation != "run")
         {
@@ -98,8 +105,14 @@ public partial class Run : State
 
     public override void StateHandleInput(InputEvent @event)
     {
+        /*
+        Input handling for jump action, the code below must be in this function,
+        otherwise the jump input may be missed if put in StatePhysicsUpdate() or StateUpdate().
+        */
+
         if (Input.IsActionJustPressed("KeyJump"))
         {
+            // Give a vertical velocity boost for the jump, then switch to Jump state
             pNode.Velocity = new Vector2(pNode.Velocity.X, pNode.jumpVelocity);
             // Prevent the same-frame buffered press from triggering another jump in Jump state
             Input.ActionRelease("KeyJump");

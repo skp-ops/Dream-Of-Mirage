@@ -25,7 +25,6 @@ public partial class Jump : State
         animationPlayer = pNode.GetNode<AnimationPlayer>("AnimationPlayer");
         sprite = pNode.GetNode<Sprite2D>("Sprite2D");
 
-        // Start with only air jumps available; ground jump is consumed in Idle/Run
         jumpCount = 2;
         jumpBufferTime = 0.15f;
         jumpBufferCounter = 0;
@@ -63,7 +62,7 @@ public partial class Jump : State
 
     public override void StateEnter()
     {
-        jumpCount = 2;
+        // Do not reset here; Fall will set remaining jumps on landing
     }
 
     public override void StateExit()
@@ -72,9 +71,10 @@ public partial class Jump : State
 
     public override void StateUpdate(double delta)
     {
-        if (pNode.IsOnFloor() && Mathf.IsZeroApprox(pNode.Velocity.Y))
+        // player not on floor and start to fall (Y > 0), then switch to Fall
+        if ((pNode.IsOnFloor() == false) && pNode.Velocity.Y > 0f)
         {
-            fsm.ChangeState("Idle");
+            fsm.ChangeState("Fall");
             return;
         }
     }
@@ -96,24 +96,19 @@ public partial class Jump : State
     public override void StatePhysicsUpdate(double delta)
     {
         float direction = Input.GetAxis("KeyLeft", "KeyRight");
+        var v = pNode.Velocity;
         if (direction != 0)
         {
             sprite.FlipH = direction < 0;
-        }
-        // Air control: allow limited horizontal steering while in air
-        var v = pNode.Velocity;
-        float airAccel = pNode.acceleration * 0.9f; // 90% of ground acceleration
-        if (direction != 0)
-        {
-            v.X = Mathf.MoveToward(v.X, direction * pNode.speed, airAccel * (float)delta);
+            v.X = Mathf.MoveToward(v.X, direction * pNode.speed, pNode.acceleration * (float)delta);
         }
         else
         {
-            v.X = Mathf.MoveToward(v.X, 0, airAccel * 0.5f * (float)delta);
+            v.X = Mathf.MoveToward(v.X, 0, pNode.acceleration * 0.9f * (float)delta);
         }
         pNode.Velocity = v;
 
-        // jump buffer
+        // handle jump buffer
         if (Input.IsActionJustPressed("KeyJump"))
         {
             jumpBufferCounter = jumpBufferTime;
@@ -133,12 +128,11 @@ public partial class Jump : State
         {
             HandleJump();
             jumpCount--;
+            // 避免同一帧重复触发
+            Input.ActionRelease("KeyJump");
         }
-        // only reset jump count when landing
-		if (!wasOnFloor && pNode.IsOnFloor())
-		{
-			jumpCount = 1;
-		}
+
+        // reset of remaining jumps is handled in Fall on landing
 		// update the previous frame's on-floor status
 		wasOnFloor = pNode.IsOnFloor();
         // gravity

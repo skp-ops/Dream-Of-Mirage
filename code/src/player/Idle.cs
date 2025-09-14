@@ -63,22 +63,25 @@ public partial class Idle : State
         }
         if (pNode.IsOnFloor() == false)
         {
-            fsm.ChangeState("Jump");
+            fsm.ChangeState("Fall");
             return;
+        }
+    }
+
+    private void HandleGravity(double delta)
+    {
+        if (!pNode.IsOnFloor())
+        {
+            pNode.Velocity += new Vector2(0, ConstVar.GRAVITY * (float)delta);
         }
     }
 
     public override void StatePhysicsUpdate(double delta)
     {
         // Apply gravity when in air and decelerate horizontally to 0 while idling
-        var velocity = pNode.Velocity;
-        if (!pNode.IsOnFloor())
-        {
-            velocity.Y += ConstVar.GRAVITY * (float)delta;
-        }
-        velocity.X = Mathf.MoveToward(velocity.X, 0, pNode.acceleration * (float)delta);
-        pNode.Velocity = velocity;
+        HandleGravity(delta);
 
+        // smoothly play idle animation
         if (animationPlayer.CurrentAnimation != "idle")
         {
             animationPlayer.Play("idle");
@@ -88,9 +91,15 @@ public partial class Idle : State
 
     public override void StateHandleInput(InputEvent @event)
     {
+        /*
+        Input handling for jump action, the code below must be in this function,
+        otherwise the jump input may be missed if put in StatePhysicsUpdate() or StateUpdate().
+        */
+
         if (Input.IsActionJustPressed("KeyJump"))
         {
             pNode.Velocity = new Vector2(pNode.Velocity.X, pNode.jumpVelocity);
+            Input.ActionRelease("KeyJump");
             fsm.ChangeState("Jump");
             return;
         }
