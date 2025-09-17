@@ -8,6 +8,7 @@ public partial class Jump : State
     // AnimationPlayer and Sprite2D
     private AnimationPlayer animationPlayer;
     private Sprite2D sprite;
+    private Node2D graphic;
 
     /*
 	I don't want to use coyote time. (reaction time is infinite)
@@ -22,8 +23,9 @@ public partial class Jump : State
     public override void _Ready()
     {
         pNode = this.GetParent().GetParent() as Player; // Jump -> FSM -> Player
-        animationPlayer = pNode.GetNode<AnimationPlayer>("AnimationPlayer");
-        sprite = pNode.GetNode<Sprite2D>("Sprite2D");
+        animationPlayer = pNode.GetNode<AnimationPlayer>(PlayerNodeName.ANIMATION);
+        sprite = pNode.GetNode<Sprite2D>(PlayerNodeName.SPRITE2D);
+        graphic = pNode.GetNode<Node2D>(PlayerNodeName.GRAPHIC);
 
         jumpCount = 2;
         jumpBufferTime = 0.15f;
@@ -37,26 +39,13 @@ public partial class Jump : State
         try
         {
             Assert.IsNoneNode<Player>(pNode);
-        }
-        catch (NullReferenceException ex)
-        {
-            Logger.LogError("pNode: " + ex.Message);
-        }
-        try
-        {
             Assert.IsNoneNode<AnimationPlayer>(animationPlayer);
-        }
-        catch (NullReferenceException ex)
-        {
-            Logger.LogError("animationPlayer: " + ex.Message);
-        }
-        try
-        {
             Assert.IsNoneNode<Sprite2D>(sprite);
+            Assert.IsNoneNode<Node2D>(graphic);
         }
         catch (NullReferenceException ex)
         {
-            Logger.LogError("sprite2D: " + ex.Message);
+            Logger.LogError("Node is null: " + ex.Message);
         }
     }
 
@@ -74,7 +63,7 @@ public partial class Jump : State
         // player not on floor and start to fall (Y > 0), then switch to Fall
         if ((pNode.IsOnFloor() == false) && pNode.Velocity.Y > 0f)
         {
-            fsm.ChangeState("Fall");
+            fsm.ChangeState(StateName.FALL);
             return;
         }
     }
@@ -99,7 +88,7 @@ public partial class Jump : State
         var v = pNode.Velocity;
         if (direction != 0)
         {
-            sprite.FlipH = direction < 0;
+            graphic.Scale = new Vector2(direction < 0 ? -1 : 1, 1);
             v.X = Mathf.MoveToward(v.X, direction * pNode.speed, pNode.acceleration * (float)delta);
         }
         else
@@ -138,8 +127,8 @@ public partial class Jump : State
         // gravity
         HandleGravity(delta);
 
-        if (animationPlayer.CurrentAnimation != "jump")
-            animationPlayer.Play("jump");
+        if (animationPlayer.CurrentAnimation != AnimationName.JUMP)
+            animationPlayer.Play(AnimationName.JUMP);
         pNode.MoveAndSlide();
     }
 

@@ -8,12 +8,14 @@ public partial class Idle : State
     // AnimationPlayer and Sprite2D
     private AnimationPlayer animationPlayer;
     private Sprite2D sprite;
+    private Node2D graphic;
 
     public override void _Ready()
     {
         pNode = this.GetParent().GetParent() as Player; // Idle -> FSM -> Player
-        animationPlayer = pNode.GetNode<AnimationPlayer>("AnimationPlayer");
-        sprite = pNode.GetNode<Sprite2D>("Sprite2D");
+        animationPlayer = pNode.GetNode<AnimationPlayer>(PlayerNodeName.ANIMATION);
+        sprite = pNode.GetNode<Sprite2D>(PlayerNodeName.SPRITE2D);
+        graphic = pNode.GetNode<Node2D>(PlayerNodeName.GRAPHIC);
         Logger.LogInfo("Query Player Node in [Idle] State done...");
     }
 
@@ -22,26 +24,13 @@ public partial class Idle : State
         try
         {
             Assert.IsNoneNode<Player>(pNode);
-        }
-        catch (NullReferenceException ex)
-        {
-            Logger.LogError("pNode: " + ex.Message);
-        }
-        try
-        {
             Assert.IsNoneNode<AnimationPlayer>(animationPlayer);
-        }
-        catch (NullReferenceException ex)
-        {
-            Logger.LogError("animationPlayer: " + ex.Message);
-        }
-        try
-        {
             Assert.IsNoneNode<Sprite2D>(sprite);
+            Assert.IsNoneNode<Node2D>(graphic);
         }
         catch (NullReferenceException ex)
         {
-            Logger.LogError("sprite2D: " + ex.Message);
+            Logger.LogError("Node is null: " + ex.Message);
         }
     }
 
@@ -58,12 +47,12 @@ public partial class Idle : State
         float direction = Input.GetAxis("KeyLeft", "KeyRight");
         if (direction != 0)
         {
-            fsm.ChangeState("Run");
+            fsm.ChangeState(StateName.RUN);
             return;
         }
         if (pNode.IsOnFloor() == false)
         {
-            fsm.ChangeState("Fall");
+            fsm.ChangeState(StateName.FALL);
             return;
         }
     }
@@ -82,9 +71,9 @@ public partial class Idle : State
         HandleGravity(delta);
 
         // smoothly play idle animation
-        if (animationPlayer.CurrentAnimation != "idle")
+        if (animationPlayer.CurrentAnimation != AnimationName.IDLE)
         {
-            animationPlayer.Play("idle");
+            animationPlayer.Play(AnimationName.IDLE);
         }
         pNode.MoveAndSlide();
     }
@@ -100,7 +89,7 @@ public partial class Idle : State
         {
             pNode.Velocity = new Vector2(pNode.Velocity.X, pNode.jumpVelocity);
             Input.ActionRelease("KeyJump");
-            fsm.ChangeState("Jump");
+            fsm.ChangeState(StateName.JUMP);
             return;
         }
     }

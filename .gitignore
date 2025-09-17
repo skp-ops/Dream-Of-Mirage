@@ -12,6 +12,7 @@ export_presets.cfg
 # .NET / C#
 bin/
 obj/
+*.old
 
 # IDE
 .vscode/

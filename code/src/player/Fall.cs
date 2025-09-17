@@ -8,18 +8,25 @@ public partial class Fall : State
     // AnimationPlayer and Sprite2D
     private AnimationPlayer animationPlayer;
     private Sprite2D sprite;
+    private Node2D graphic;
     // Reference to Jump state for shared jump counters
     private Jump jumpState;
+    private RayCast2D handCheck;
+    private RayCast2D footCheck;
 
     public override void _Ready()
     {
         pNode = this.GetParent().GetParent() as Player; // Fall -> FSM -> Player
-        animationPlayer = pNode.GetNode<AnimationPlayer>("AnimationPlayer");
-        sprite = pNode.GetNode<Sprite2D>("Sprite2D");
+        animationPlayer = pNode.GetNode<AnimationPlayer>(PlayerNodeName.ANIMATION);
+        sprite = pNode.GetNode<Sprite2D>(PlayerNodeName.SPRITE2D);
+        graphic = pNode.GetNode<Node2D>(PlayerNodeName.GRAPHIC);
+        handCheck = pNode.GetNode<RayCast2D>(PlayerNodeName.HAND_CHECK);
+        footCheck = pNode.GetNode<RayCast2D>(PlayerNodeName.FOOT_CHECK);
+
         // Try to fetch sibling Jump state to manage remaining air jumps
         try
         {
-            jumpState = this.GetParent().GetNode<Jump>("Jump");
+            jumpState = this.GetParent().GetNode<Jump>(StateName.JUMP);
         }
         catch (Exception)
         {
@@ -33,34 +40,16 @@ public partial class Fall : State
         try
         {
             Assert.IsNoneNode<Player>(pNode);
-        }
-        catch (NullReferenceException ex)
-        {
-            Logger.LogError("pNode: " + ex.Message);
-        }
-        try
-        {
             Assert.IsNoneNode<AnimationPlayer>(animationPlayer);
-        }
-        catch (NullReferenceException ex)
-        {
-            Logger.LogError("animationPlayer: " + ex.Message);
-        }
-        try
-        {
             Assert.IsNoneNode<Sprite2D>(sprite);
-        }
-        catch (NullReferenceException ex)
-        {
-            Logger.LogError("sprite2D: " + ex.Message);
-        }
-        try
-        {
+            Assert.IsNoneNode<Node2D>(graphic);
             Assert.IsNoneNode<Jump>(jumpState);
+            Assert.IsNoneNode<RayCast2D>(handCheck);
+            Assert.IsNoneNode<RayCast2D>(footCheck);
         }
         catch (NullReferenceException ex)
         {
-            Logger.LogError("jumpState: " + ex.Message);
+            Logger.LogError("Node is null: " + ex.Message);
         }
     }
 
@@ -79,7 +68,7 @@ public partial class Fall : State
             float direction = Input.GetAxis("KeyLeft", "KeyRight");
             // On landing, reset remaining air jumps to 2 so walking off ledge grants two jumps
             jumpState.jumpCount = 2;
-        
+
             if (Mathf.IsZeroApprox(direction))
             {
                 // Stop horizontal drift on landing when no input is held
@@ -87,13 +76,19 @@ public partial class Fall : State
                 {
                     pNode.Velocity = new Vector2(0, pNode.Velocity.Y);
                 }
-                fsm.ChangeState("Idle");
+                fsm.ChangeState(StateName.IDLE);
             }
             else
             {
                 // If player is holding a direction, continue into Run state immediately on landing
-                fsm.ChangeState("Run");
+                fsm.ChangeState(StateName.RUN);
             }
+            return;
+        }
+        if ((pNode.IsOnWall() == true) && (pNode.IsOnFloor() == false) &&
+            (handCheck.IsColliding() == true) && (footCheck.IsColliding() == true))
+        {
+            fsm.ChangeState(StateName.ONWALL);
             return;
         }
     }
@@ -112,7 +107,7 @@ public partial class Fall : State
         var v = pNode.Velocity;
         if (direction != 0)
         {
-            sprite.FlipH = direction < 0;
+            graphic.Scale = new Vector2(direction < 0 ? -1 : 1, 1);
             v.X = Mathf.MoveToward(v.X, direction * pNode.speed, pNode.acceleration * (float)delta);
         }
         else
@@ -122,9 +117,9 @@ public partial class Fall : State
         pNode.Velocity = v;
 
         HandleGravity(delta);
-        if (animationPlayer.CurrentAnimation != "fall")
+        if (animationPlayer.CurrentAnimation != AnimationName.FALL)
         {
-            animationPlayer.Play("fall");
+            animationPlayer.Play(AnimationName.FALL);
         }
         pNode.MoveAndSlide();
     }
@@ -137,7 +132,7 @@ public partial class Fall : State
             // Give a vertical velocity boost for the jump, then switch to Jump state
             pNode.Velocity = new Vector2(pNode.Velocity.X, pNode.jumpVelocity);
             Input.ActionRelease("KeyJump");
-            fsm.ChangeState("Jump");
+            fsm.ChangeState(StateName.JUMP);
             return;
         }
     }

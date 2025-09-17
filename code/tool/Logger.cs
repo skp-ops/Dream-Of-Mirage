@@ -28,7 +28,8 @@ public partial class Logger
 			GD.Print($"Created log directory at {_logDirectory}");
 		}
 		// only one log file per run
-		string logFileName = $"DOM_{DateTime.Now:yyyyMMdd_HHmmss}.log";
+		// string logFileName = $"DOM_{DateTime.Now:yyyyMMdd_HHmmss}.log";
+		string logFileName = "DOM_debug.log";
 		_logFilePath = Path.Combine(_logDirectory, logFileName);
 	}
 

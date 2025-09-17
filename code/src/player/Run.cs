@@ -8,15 +8,17 @@ public partial class Run : State
     // AnimationPlayer and Sprite2D
     private AnimationPlayer animationPlayer;
     private Sprite2D sprite;
+    private Node2D graphic;
     // Reference to Jump state to manage remaining air jumps on walk-off
     private Jump jumpState;
 
     public override void _Ready()
     {
         pNode = this.GetParent().GetParent() as Player; // Run -> FSM -> Player
-        animationPlayer = pNode.GetNode<AnimationPlayer>("AnimationPlayer");
-        sprite = pNode.GetNode<Sprite2D>("Sprite2D");
-        jumpState = this.GetParent().GetNode<Jump>("Jump");
+        animationPlayer = pNode.GetNode<AnimationPlayer>(PlayerNodeName.ANIMATION);
+        sprite = pNode.GetNode<Sprite2D>(PlayerNodeName.SPRITE2D);
+        graphic = pNode.GetNode<Node2D>(PlayerNodeName.GRAPHIC);
+        jumpState = this.GetParent().GetNode<Jump>(StateName.JUMP);
         Logger.LogInfo("Query Player Node in [Run] State done...");
     }
 
@@ -25,34 +27,14 @@ public partial class Run : State
         try
         {
             Assert.IsNoneNode<Player>(pNode);
-        }
-        catch (NullReferenceException ex)
-        {
-            Logger.LogError("pNode: " + ex.Message);
-        }
-        try
-        {
             Assert.IsNoneNode<AnimationPlayer>(animationPlayer);
-        }
-        catch (NullReferenceException ex)
-        {
-            Logger.LogError("animationPlayer: " + ex.Message);
-        }
-        try
-        {
             Assert.IsNoneNode<Sprite2D>(sprite);
-        }
-        catch (NullReferenceException ex)
-        {
-            Logger.LogError("sprite2D: " + ex.Message);
-        }
-        try
-        {
+            Assert.IsNoneNode<Node2D>(graphic);
             Assert.IsNoneNode<Jump>(jumpState);
         }
         catch (NullReferenceException ex)
         {
-            Logger.LogError("jumpState: " + ex.Message);
+            Logger.LogError("Node is null: " + ex.Message);
         }
     }
 
@@ -69,14 +51,14 @@ public partial class Run : State
         if (pNode.IsOnFloor() == false)
         {
             jumpState.jumpCount = 2;
-            fsm.ChangeState("Fall");
+            fsm.ChangeState(StateName.FALL);
             return;
         }
 
         float direction = Input.GetAxis("KeyLeft", "KeyRight");
         if ((pNode.Velocity.X == 0) && (direction == 0))
         {
-            fsm.ChangeState("Idle");
+            fsm.ChangeState(StateName.IDLE);
             return;
         }
     }
@@ -88,7 +70,7 @@ public partial class Run : State
         // horizontal movement
         if (direction != 0)
         {
-            sprite.FlipH = direction < 0;
+            graphic.Scale = new Vector2(direction < 0 ? -1 : 1, 1);
             velocity.X = Mathf.MoveToward(velocity.X, direction * pNode.speed, pNode.acceleration * (float)delta);
         }
         else
@@ -96,9 +78,9 @@ public partial class Run : State
             velocity.X = Mathf.MoveToward(velocity.X, 0, pNode.acceleration * (float)delta);
         }
         pNode.Velocity = velocity;
-        if (animationPlayer.CurrentAnimation != "run")
+        if (animationPlayer.CurrentAnimation != AnimationName.RUN)
         {
-            animationPlayer.Play("run");
+            animationPlayer.Play(AnimationName.RUN);
         }
         pNode.MoveAndSlide();
     }
@@ -116,7 +98,7 @@ public partial class Run : State
             pNode.Velocity = new Vector2(pNode.Velocity.X, pNode.jumpVelocity);
             // Prevent the same-frame buffered press from triggering another jump in Jump state
             Input.ActionRelease("KeyJump");
-            fsm.ChangeState("Jump");
+            fsm.ChangeState(StateName.JUMP);
             return;
         }
     }

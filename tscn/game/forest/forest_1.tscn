@@ -406,7 +406,7 @@ tile_map_data = PackedByteArray("AABIABIAAgAEAAQAAABIABEAAgAKAAEAAABIABAAAgAFAAE
 tile_set = SubResource("TileSet_byr5b")
 
 [node name="Player" parent="." instance=ExtResource("3_ulpe1")]
-position = Vector2(1010, 204)
+position = Vector2(464, -22)
 
 [node name="decoration" type="Node2D" parent="."]
 metadata/_edit_lock_ = true

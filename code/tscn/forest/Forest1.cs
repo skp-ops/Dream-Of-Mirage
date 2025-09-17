@@ -49,8 +49,8 @@ public partial class Forest1 : Node2D
 	public override void _Ready()
 	{
 		Logger.LogInfo("Forest1 scene is ready.");
-		tileMap = GetNode<TileMapLayer>("PhysicsLayer");
-		camera = GetNode<Camera2D>("Player/Camera2D");
+		tileMap = GetNode<TileMapLayer>(TscnNodeName.FOREST1_PHYSICS_LAYER);
+		camera = GetNode<Camera2D>(PlayerNodeName.ROOT + "/" + PlayerNodeName.CAMERA);
 		CheckNode();
 		SetCameraLimits();
 	}
