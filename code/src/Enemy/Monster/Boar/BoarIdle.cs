@@ -4,6 +4,7 @@ using System;
 public partial class BoarIdle : State
 {
     private float idleTimer = 0f;
+    private float walkDelay = 0f;
     // monster node
     private Boar bNode;
     // AnimationPlayer and Sprite2D
@@ -48,7 +49,7 @@ public partial class BoarIdle : State
     {
         bNode.Velocity = new Vector2(0, bNode.Velocity.Y);
         // if wall is detected or if no floor ahead, just turn around
-        if (wallCheck.IsColliding() || !floorCheck.IsColliding())
+        if (wallCheck.IsColliding())
         {
             graphic.Scale = new Vector2(-graphic.Scale.X, graphic.Scale.Y);
         }
@@ -57,10 +58,20 @@ public partial class BoarIdle : State
     public override void StateExit()
     {
         idleTimer = 0f;
+        walkDelay = 0f;
     }
 
     public override void StateUpdate(double delta)
     {
+        if (floorCheck.IsColliding() == false)
+        {
+            walkDelay += (float)delta;
+            if (walkDelay >= 0.5f)
+            {
+                graphic.Scale = new Vector2(-graphic.Scale.X, graphic.Scale.Y);
+                fsm.ChangeState(StateName.WALK);
+            }
+        }
         idleTimer += (float)delta;
         // if player is detected, switch to attack state
         if (playerCheck.IsColliding())

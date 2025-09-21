@@ -430,7 +430,7 @@ region_enabled = true
 region_rect = Rect2(0, 0, 336, 56)
 
 [node name="HandCheck" type="RayCast2D" parent="Graphic"]
-position = Vector2(1, -15)
+position = Vector2(1, -17)
 rotation = -3.1415882
 scale = Vector2(1.4831357, -0.5075307)
 target_position = Vector2(-5, 0)

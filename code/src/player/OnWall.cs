@@ -104,7 +104,6 @@ public partial class OnWall : State
             lastWallDirX = dirX;
             // Apply horizontal velocity away from the wall
             pNode.Velocity = new Vector2(pNode.speed * wallNormal.X, pNode.jumpVelocity);
-            
             jumpState.jumpCount--;
 
             Input.ActionRelease("KeyJump");

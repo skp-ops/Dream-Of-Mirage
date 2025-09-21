@@ -2,7 +2,7 @@ using Godot;
 
 public static class ConstVar
 {
-    public static readonly float GRAVITY = (float)ProjectSettings.GetSetting("physics/2d/default_gravity");
+    public static readonly float GRAVITY = (float)ProjectSettings.GetSetting("physics/2d/default_gravity") * 0.8f;
 }
 
 public static class PlayerNodeName

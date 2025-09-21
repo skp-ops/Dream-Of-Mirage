@@ -80,7 +80,7 @@ public partial class FiniteStateMachine : Node
 
     public void ChangeState(string key)
     {
-        LogInfo(mCurrentState.Name + " changing to " + key);
+        // LogInfo(mCurrentState.Name + " changing to " + key);
         if (!mStates.ContainsKey(key))
         {
             LogError($"State change to {key} failed. State does not exist.");

@@ -19,6 +19,8 @@ public partial class Jump : State
     public float jumpBufferTime;
     public float jumpBufferCounter;
     public bool wasOnFloor;
+    private RayCast2D handCheck;
+    private RayCast2D footCheck;
 
     public override void _Ready()
     {
@@ -26,6 +28,9 @@ public partial class Jump : State
         animationPlayer = pNode.GetNode<AnimationPlayer>(PlayerNodeName.ANIMATION);
         sprite = pNode.GetNode<Sprite2D>(PlayerNodeName.SPRITE2D);
         graphic = pNode.GetNode<Node2D>(PlayerNodeName.GRAPHIC);
+        handCheck = pNode.GetNode<RayCast2D>(PlayerNodeName.HAND_CHECK);
+        footCheck = pNode.GetNode<RayCast2D>(PlayerNodeName.FOOT_CHECK);
+
 
         jumpCount = 2;
         jumpBufferTime = 0.15f;
@@ -42,6 +47,8 @@ public partial class Jump : State
             Assert.IsNoneNode<AnimationPlayer>(animationPlayer);
             Assert.IsNoneNode<Sprite2D>(sprite);
             Assert.IsNoneNode<Node2D>(graphic);
+            Assert.IsNoneNode<RayCast2D>(handCheck);
+            Assert.IsNoneNode<RayCast2D>(footCheck);
         }
         catch (NullReferenceException ex)
         {
@@ -56,6 +63,8 @@ public partial class Jump : State
 
     public override void StateExit()
     {
+        jumpBufferTime = 0.15f;
+        jumpBufferCounter = 0;
     }
 
     public override void StateUpdate(double delta)
@@ -64,6 +73,13 @@ public partial class Jump : State
         if ((pNode.IsOnFloor() == false) && pNode.Velocity.Y > 0f)
         {
             fsm.ChangeState(StateName.FALL);
+            return;
+        }
+        if ((pNode.IsOnWall() == true) && (pNode.IsOnFloor() == false) &&
+            (handCheck.IsColliding() == true) && (footCheck.IsColliding() == true) &&
+            (pNode.Velocity.Y == 0))
+        {
+            fsm.ChangeState(StateName.ONWALL);
             return;
         }
     }
