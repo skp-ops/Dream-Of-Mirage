@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=4 uid="uid://br2dsnd2xagpm"]
+[gd_scene load_steps=13 format=4 uid="uid://br2dsnd2xagpm"]
 
 [ext_resource type="Texture2D" uid="uid://beb8p80dm0wh" path="res://assets/tilemap/Forest.png" id="1_a0ua1"]
 [ext_resource type="Script" uid="uid://odfevgjf25tn" path="res://code/tscn/forest/Forest1.cs" id="1_byr5b"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bvxqio7alpk77" path="res://tscn/game/player/Player.tscn" id="3_ulpe1"]
 [ext_resource type="Texture2D" uid="uid://di4yd84khb0xv" path="res://assets/background/Sky.png" id="5_yyxcr"]
 [ext_resource type="Texture2D" uid="uid://cj11fii8wc3u" path="res://assets/tilemap/Trees.png" id="6_byr5b"]
+[ext_resource type="PackedScene" uid="uid://bv0ditemi0vut" path="res://tscn/game/enemy/monster/boar.tscn" id="7_suior"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_byr5b"]
 texture = ExtResource("2_ulpe1")
@@ -567,3 +568,6 @@ scale = Vector2(1.80791, 1.80791)
 texture = ExtResource("2_ulpe1")
 region_enabled = true
 region_rect = Rect2(210, 293, 124, 86)
+
+[node name="Boar" parent="." instance=ExtResource("7_suior")]
+position = Vector2(427, 18)

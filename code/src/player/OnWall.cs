@@ -106,7 +106,6 @@ public partial class OnWall : State
             pNode.Velocity = new Vector2(pNode.speed * wallNormal.X, pNode.jumpVelocity);
             
             jumpState.jumpCount--;
-            Logger.LogInfo("Wall jump performed. Jump count: " + jumpState.jumpCount);
 
             Input.ActionRelease("KeyJump");
             fsm.ChangeState(StateName.JUMP);

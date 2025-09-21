@@ -27,3 +27,7 @@ obj/
 *.pidb
 *.pdb
 *.mdb
+
+# export executables
+data_Dream Of Mirage_*
+.godot/exported/

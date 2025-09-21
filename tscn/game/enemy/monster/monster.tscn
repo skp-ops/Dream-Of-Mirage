@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://f0b0tlnef2m5"]
+
+[ext_resource type="Script" uid="uid://c5ld82xiufg3h" path="res://code/src/Enemy/Monster/Monster.cs" id="1_cdwbn"]
+[ext_resource type="Script" uid="uid://cd5h0w2v2de2k" path="res://code/src/fsm/FiniteStateMachine.cs" id="2_sylls"]
+
+[node name="Monster" type="CharacterBody2D"]
+collision_layer = 4
+script = ExtResource("1_cdwbn")
+
+[node name="Graphic" type="Node2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Graphic"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[node name="FSM" type="Node" parent="."]
+script = ExtResource("2_sylls")
+mInitialStatePath = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="FSM"]
+
+[node name="Walk" type="Node" parent="FSM"]
+
+[node name="Attack" type="Node" parent="FSM"]
+
+[node name="Hit" type="Node" parent="FSM"]

@@ -117,7 +117,6 @@ public partial class Jump : State
         {
             HandleJump();
             jumpCount--;
-            // 避免同一帧重复触发
             Input.ActionRelease("KeyJump");
         }
 

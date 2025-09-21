@@ -20,10 +20,10 @@ public partial class FiniteStateMachine : Node
             if (child is State s)
             {
                 mStates[s.Name] = s;
-                LogInfo($"State {s.Name} initialized.");
                 s.fsm = this;
                 s.StateReady();
                 s.StateExit(); // Ensure all states are exited initially
+                LogInfo($"State {s.Name} initialized.");
             }
         }
         // Do current state
@@ -80,6 +80,7 @@ public partial class FiniteStateMachine : Node
 
     public void ChangeState(string key)
     {
+        LogInfo(mCurrentState.Name + " changing to " + key);
         if (!mStates.ContainsKey(key))
         {
             LogError($"State change to {key} failed. State does not exist.");
