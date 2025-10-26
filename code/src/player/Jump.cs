@@ -4,7 +4,7 @@ using System;
 public partial class Jump : State
 {
     // player node
-    private Player pNode;
+    private Player player;
     // AnimationPlayer and Sprite2D
     private AnimationPlayer animationPlayer;
     private Sprite2D sprite;
@@ -14,7 +14,6 @@ public partial class Jump : State
 	I don't want to use coyote time. (reaction time is infinite)
 	when the player is not on the floor, they can always jump, so coyote time is not needed.
 	*/
-    public int jumpCount;
     // Jump buffer
     public float jumpBufferTime;
     public float jumpBufferCounter;
@@ -24,18 +23,17 @@ public partial class Jump : State
 
     public override void _Ready()
     {
-        pNode = this.GetParent().GetParent() as Player; // Jump -> FSM -> Player
-        animationPlayer = pNode.GetNode<AnimationPlayer>(PlayerNodeName.ANIMATION);
-        sprite = pNode.GetNode<Sprite2D>(PlayerNodeName.SPRITE2D);
-        graphic = pNode.GetNode<Node2D>(PlayerNodeName.GRAPHIC);
-        handCheck = pNode.GetNode<RayCast2D>(PlayerNodeName.HAND_CHECK);
-        footCheck = pNode.GetNode<RayCast2D>(PlayerNodeName.FOOT_CHECK);
+        player = this.GetParent().GetParent() as Player; // Jump -> FSM -> Player
+        animationPlayer = player.GetNode<AnimationPlayer>(PlayerNodeName.ANIMATION);
+        sprite = player.GetNode<Sprite2D>(PlayerNodeName.SPRITE2D);
+        graphic = player.GetNode<Node2D>(PlayerNodeName.GRAPHIC);
+        handCheck = player.GetNode<RayCast2D>(PlayerNodeName.HAND_CHECK);
+        footCheck = player.GetNode<RayCast2D>(PlayerNodeName.FOOT_CHECK);
 
 
-        jumpCount = 2;
         jumpBufferTime = 0.15f;
         jumpBufferCounter = 0;
-        wasOnFloor = pNode.IsOnFloor();
+        wasOnFloor = player.IsOnFloor();
         Logger.LogInfo("Query Player Node in [Jump] State done...");
     }
 
@@ -43,7 +41,7 @@ public partial class Jump : State
     {
         try
         {
-            Assert.IsNoneNode<Player>(pNode);
+            Assert.IsNoneNode<Player>(player);
             Assert.IsNoneNode<AnimationPlayer>(animationPlayer);
             Assert.IsNoneNode<Sprite2D>(sprite);
             Assert.IsNoneNode<Node2D>(graphic);
@@ -70,14 +68,14 @@ public partial class Jump : State
     public override void StateUpdate(double delta)
     {
         // player not on floor and start to fall (Y > 0), then switch to Fall
-        if ((pNode.IsOnFloor() == false) && pNode.Velocity.Y > 0f)
+        if ((player.IsOnFloor() == false) && player.Velocity.Y > 0f)
         {
             fsm.ChangeState(StateName.FALL);
             return;
         }
-        if ((pNode.IsOnWall() == true) && (pNode.IsOnFloor() == false) &&
+        if ((player.IsOnWall() == true) && (player.IsOnFloor() == false) &&
             (handCheck.IsColliding() == true) && (footCheck.IsColliding() == true) &&
-            (pNode.Velocity.Y == 0))
+            (player.Velocity.Y == 0))
         {
             fsm.ChangeState(StateName.ONWALL);
             return;
@@ -86,32 +84,32 @@ public partial class Jump : State
 
     private void HandleJump()
     {
-        pNode.Velocity = new Vector2(pNode.Velocity.X, pNode.jumpVelocity);
+        player.Velocity = new Vector2(player.Velocity.X, player.jumpVelocity);
         jumpBufferCounter = 0f;
     }
 
     private void HandleGravity(double delta)
     {
-        if (!pNode.IsOnFloor())
+        if (!player.IsOnFloor())
         {
-            pNode.Velocity += new Vector2(0, ConstVar.GRAVITY * (float)delta);
+            player.Velocity += new Vector2(0, ConstVar.GRAVITY * (float)delta);
         }
     }
 
     public override void StatePhysicsUpdate(double delta)
     {
         float direction = Input.GetAxis("KeyLeft", "KeyRight");
-        var v = pNode.Velocity;
+        var v = player.Velocity;
         if (direction != 0)
         {
             graphic.Scale = new Vector2(direction < 0 ? -1 : 1, 1);
-            v.X = Mathf.MoveToward(v.X, direction * pNode.speed, pNode.acceleration * (float)delta);
+            v.X = Mathf.MoveToward(v.X, direction * player.speed, player.acceleration * (float)delta);
         }
         else
         {
-            v.X = Mathf.MoveToward(v.X, 0, pNode.acceleration * 0.9f * (float)delta);
+            v.X = Mathf.MoveToward(v.X, 0, player.acceleration * 0.9f * (float)delta);
         }
-        pNode.Velocity = v;
+        player.Velocity = v;
 
         // handle jump buffer
         if (Input.IsActionJustPressed("KeyJump"))
@@ -125,26 +123,26 @@ public partial class Jump : State
 
         bool executeJump = false;
         // if jump buffer time is valid and have jump count, then jump
-        if ((jumpBufferCounter > 0f) && (jumpCount > 0))
+        if ((jumpBufferCounter > 0f) && (player.GetJumpCount() > 0))
         {
             executeJump = true;
         }
         if (executeJump)
         {
             HandleJump();
-            jumpCount--;
+            player.SetJumpCount(player.GetJumpCount() - 1);
             Input.ActionRelease("KeyJump");
         }
 
         // reset of remaining jumps is handled in Fall on landing
-		// update the previous frame's on-floor status
-		wasOnFloor = pNode.IsOnFloor();
+        // update the previous frame's on-floor status
+        wasOnFloor = player.IsOnFloor();
         // gravity
         HandleGravity(delta);
 
         if (animationPlayer.CurrentAnimation != AnimationName.JUMP)
             animationPlayer.Play(AnimationName.JUMP);
-        pNode.MoveAndSlide();
+        player.MoveAndSlide();
     }
 
     public override void StateHandleInput(InputEvent @event)

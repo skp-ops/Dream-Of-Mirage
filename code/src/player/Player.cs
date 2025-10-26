@@ -36,4 +36,22 @@ public partial class Player : CharacterBody2D
 	public override void _PhysicsProcess(double delta)
 	{
 	}
+
+	public int GetJumpCount()
+	{
+		return jumpCount;
+	}
+
+	public void SetJumpCount(int count)
+	{
+		jumpCount = count;
+	}
+
+	public void HandleGravity(double delta)
+    {
+        if (!this.IsOnFloor())
+        {
+            this.Velocity += new Vector2(0, ConstVar.GRAVITY * (float)delta);
+        }
+    }
 }

@@ -4,6 +4,7 @@ using System;
 public partial class BoarAttack : State
 {
     private float cooldownTimer;
+    private float originalSpeed;
     // monster node
     private Boar bNode;
     // AnimationPlayer and Sprite2D
@@ -13,7 +14,7 @@ public partial class BoarAttack : State
     private RayCast2D wallCheck;
     private RayCast2D floorCheck;
     private RayCast2D playerCheck;
-    private float originalSpeed;
+
 
     public override void _Ready()
     {

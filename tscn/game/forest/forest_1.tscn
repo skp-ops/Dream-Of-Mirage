@@ -407,7 +407,7 @@ tile_map_data = PackedByteArray("AABIABIAAgAEAAQAAABIABEAAgAKAAEAAABIABAAAgAFAAE
 tile_set = SubResource("TileSet_byr5b")
 
 [node name="Player" parent="." instance=ExtResource("3_ulpe1")]
-position = Vector2(464, -22)
+position = Vector2(27, 78)
 
 [node name="decoration" type="Node2D" parent="."]
 metadata/_edit_lock_ = true
@@ -570,4 +570,4 @@ region_enabled = true
 region_rect = Rect2(210, 293, 124, 86)
 
 [node name="Boar" parent="." instance=ExtResource("7_suior")]
-position = Vector2(435, -9)
+position = Vector2(91, 108)

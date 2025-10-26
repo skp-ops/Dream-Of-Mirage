@@ -59,6 +59,8 @@ public partial class BoarWalk : State
             fsm.ChangeState(StateName.ATTACK);
             return;
         }
+        floorCheck.ForceRaycastUpdate();
+        wallCheck.ForceRaycastUpdate();
         // if wall is detected or if no floor ahead, just turn around
         if (wallCheck.IsColliding() || !floorCheck.IsColliding())
         {

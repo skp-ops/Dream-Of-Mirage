@@ -4,7 +4,7 @@ using System;
 public partial class Fall : State
 {
     // player node
-    private Player pNode;
+    private Player player;
     // AnimationPlayer and Sprite2D
     private AnimationPlayer animationPlayer;
     private Sprite2D sprite;
@@ -16,30 +16,19 @@ public partial class Fall : State
 
     public override void _Ready()
     {
-        pNode = this.GetParent().GetParent() as Player; // Fall -> FSM -> Player
-        animationPlayer = pNode.GetNode<AnimationPlayer>(PlayerNodeName.ANIMATION);
-        sprite = pNode.GetNode<Sprite2D>(PlayerNodeName.SPRITE2D);
-        graphic = pNode.GetNode<Node2D>(PlayerNodeName.GRAPHIC);
-        handCheck = pNode.GetNode<RayCast2D>(PlayerNodeName.HAND_CHECK);
-        footCheck = pNode.GetNode<RayCast2D>(PlayerNodeName.FOOT_CHECK);
-
-        // Try to fetch sibling Jump state to manage remaining air jumps
-        try
-        {
-            jumpState = this.GetParent().GetNode<Jump>(StateName.JUMP);
-        }
-        catch (Exception)
-        {
-            jumpState = null;
-        }
-        Logger.LogInfo("Query Player Node in [Fall] State done...");
+        player = this.GetParent().GetParent() as Player; // Fall -> FSM -> Player
+        animationPlayer = player.GetNode<AnimationPlayer>(PlayerNodeName.ANIMATION);
+        sprite = player.GetNode<Sprite2D>(PlayerNodeName.SPRITE2D);
+        graphic = player.GetNode<Node2D>(PlayerNodeName.GRAPHIC);
+        handCheck = player.GetNode<RayCast2D>(PlayerNodeName.HAND_CHECK);
+        footCheck = player.GetNode<RayCast2D>(PlayerNodeName.FOOT_CHECK);
     }
 
     public override void StateReady()
     {
         try
         {
-            Assert.IsNoneNode<Player>(pNode);
+            Assert.IsNoneNode<Player>(player);
             Assert.IsNoneNode<AnimationPlayer>(animationPlayer);
             Assert.IsNoneNode<Sprite2D>(sprite);
             Assert.IsNoneNode<Node2D>(graphic);
@@ -63,18 +52,15 @@ public partial class Fall : State
 
     public override void StateUpdate(double delta)
     {
-        if (pNode.IsOnFloor() && Mathf.IsZeroApprox(pNode.Velocity.Y))
+        if (player.IsOnFloor() && Mathf.IsZeroApprox(player.Velocity.Y))
         {
             float direction = Input.GetAxis("KeyLeft", "KeyRight");
-            // On landing, reset remaining air jumps to 2 so walking off ledge grants two jumps
-            jumpState.jumpCount = 2;
-
             if (Mathf.IsZeroApprox(direction))
             {
                 // Stop horizontal drift on landing when no input is held
-                if (!Mathf.IsZeroApprox(pNode.Velocity.X))
+                if (!Mathf.IsZeroApprox(player.Velocity.X))
                 {
-                    pNode.Velocity = new Vector2(0, pNode.Velocity.Y);
+                    player.Velocity = new Vector2(0, player.Velocity.Y);
                 }
                 fsm.ChangeState(StateName.IDLE);
             }
@@ -85,52 +71,52 @@ public partial class Fall : State
             }
             return;
         }
-        if ((pNode.IsOnWall() == true) && (pNode.IsOnFloor() == false) &&
+        if ((player.IsOnWall() == true) && (player.IsOnFloor() == false) &&
             (handCheck.IsColliding() == true) && (footCheck.IsColliding() == true))
         {
             fsm.ChangeState(StateName.ONWALL);
             return;
         }
     }
-    
+
     private void HandleGravity(double delta)
     {
-        if (pNode.IsOnFloor() == false)
+        if (player.IsOnFloor() == false)
         {
-            pNode.Velocity += new Vector2(0, ConstVar.GRAVITY * (float)delta);
+            player.Velocity += new Vector2(0, ConstVar.GRAVITY * (float)delta);
         }
     }
 
     public override void StatePhysicsUpdate(double delta)
     {
         float direction = Input.GetAxis("KeyLeft", "KeyRight");
-        var v = pNode.Velocity;
+        var v = player.Velocity;
         if (direction != 0)
         {
             graphic.Scale = new Vector2(direction < 0 ? -1 : 1, 1);
-            v.X = Mathf.MoveToward(v.X, direction * pNode.speed, pNode.acceleration * (float)delta);
+            v.X = Mathf.MoveToward(v.X, direction * player.speed, player.acceleration * (float)delta);
         }
         else
         {
-            v.X = Mathf.MoveToward(v.X, 0, pNode.acceleration * 0.9f * (float)delta);
+            v.X = Mathf.MoveToward(v.X, 0, player.acceleration * 0.9f * (float)delta);
         }
-        pNode.Velocity = v;
+        player.Velocity = v;
 
         HandleGravity(delta);
         if (animationPlayer.CurrentAnimation != AnimationName.FALL)
         {
             animationPlayer.Play(AnimationName.FALL);
         }
-        pNode.MoveAndSlide();
+        player.MoveAndSlide();
     }
 
     public override void StateHandleInput(InputEvent @event)
     {
-        if (Input.IsActionJustPressed("KeyJump") && jumpState.jumpCount > 0)
+        if (Input.IsActionJustPressed("KeyJump") && player.GetJumpCount() > 0)
         {
             // Allow air-jump only if we have remaining jumps
             // Give a vertical velocity boost for the jump, then switch to Jump state
-            pNode.Velocity = new Vector2(pNode.Velocity.X, pNode.jumpVelocity);
+            player.Velocity = new Vector2(player.Velocity.X, player.jumpVelocity);
             Input.ActionRelease("KeyJump");
             fsm.ChangeState(StateName.JUMP);
             return;

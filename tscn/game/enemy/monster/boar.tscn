@@ -289,7 +289,7 @@ region_rect = Rect2(0, 0, 280, 32)
 
 [node name="WallCheck" type="RayCast2D" parent="Graphic" index="1"]
 position = Vector2(2, -7)
-target_position = Vector2(-18, 0)
+target_position = Vector2(-12, 0)
 
 [node name="PlayerCheck" type="RayCast2D" parent="Graphic" index="2"]
 position = Vector2(2, -7)

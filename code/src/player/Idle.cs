@@ -4,7 +4,7 @@ using System;
 public partial class Idle : State
 {
     // player node
-    private Player pNode;
+    private Player player;
     // AnimationPlayer and Sprite2D
     private AnimationPlayer animationPlayer;
     private Sprite2D sprite;
@@ -12,10 +12,10 @@ public partial class Idle : State
 
     public override void _Ready()
     {
-        pNode = this.GetParent().GetParent() as Player; // Idle -> FSM -> Player
-        animationPlayer = pNode.GetNode<AnimationPlayer>(PlayerNodeName.ANIMATION);
-        sprite = pNode.GetNode<Sprite2D>(PlayerNodeName.SPRITE2D);
-        graphic = pNode.GetNode<Node2D>(PlayerNodeName.GRAPHIC);
+        player = this.GetParent().GetParent() as Player; // Idle -> FSM -> Player
+        animationPlayer = player.GetNode<AnimationPlayer>(PlayerNodeName.ANIMATION);
+        sprite = player.GetNode<Sprite2D>(PlayerNodeName.SPRITE2D);
+        graphic = player.GetNode<Node2D>(PlayerNodeName.GRAPHIC);
         Logger.LogInfo("Query Player Node in [Idle] State done...");
     }
 
@@ -23,7 +23,7 @@ public partial class Idle : State
     {
         try
         {
-            Assert.IsNoneNode<Player>(pNode);
+            Assert.IsNoneNode<Player>(player);
             Assert.IsNoneNode<AnimationPlayer>(animationPlayer);
             Assert.IsNoneNode<Sprite2D>(sprite);
             Assert.IsNoneNode<Node2D>(graphic);
@@ -36,6 +36,7 @@ public partial class Idle : State
 
     public override void StateEnter()
     {
+        player.SetJumpCount(2);
     }
 
     public override void StateExit()
@@ -50,7 +51,7 @@ public partial class Idle : State
             fsm.ChangeState(StateName.RUN);
             return;
         }
-        if (pNode.IsOnFloor() == false)
+        if (player.IsOnFloor() == false)
         {
             fsm.ChangeState(StateName.FALL);
             return;
@@ -59,9 +60,9 @@ public partial class Idle : State
 
     private void HandleGravity(double delta)
     {
-        if (!pNode.IsOnFloor())
+        if (!player.IsOnFloor())
         {
-            pNode.Velocity += new Vector2(0, ConstVar.GRAVITY * (float)delta);
+            player.Velocity += new Vector2(0, ConstVar.GRAVITY * (float)delta);
         }
     }
 
@@ -75,7 +76,7 @@ public partial class Idle : State
         {
             animationPlayer.Play(AnimationName.IDLE);
         }
-        pNode.MoveAndSlide();
+        player.MoveAndSlide();
     }
 
     public override void StateHandleInput(InputEvent @event)
@@ -87,7 +88,7 @@ public partial class Idle : State
 
         if (Input.IsActionJustPressed("KeyJump"))
         {
-            pNode.Velocity = new Vector2(pNode.Velocity.X, pNode.jumpVelocity);
+            player.Velocity = new Vector2(player.Velocity.X, player.jumpVelocity);
             Input.ActionRelease("KeyJump");
             fsm.ChangeState(StateName.JUMP);
             return;
