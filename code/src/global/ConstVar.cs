@@ -38,6 +38,9 @@ public static class StateName
     public static readonly string ONWALL = "OnWall";
     public static readonly string ATTACK = "Attack";
     public static readonly string HIT = "Hit";
+    public static readonly string ATTACK_1 = "Attack_1";
+    public static readonly string ATTACK_2 = "Attack_2";
+    public static readonly string ATTACK_3 = "Attack_3";
 }
 
 public static class AnimationName
@@ -61,6 +64,9 @@ public static class AnimationSpecialName
     special animation names for specific enemies or players
     OWNER_ANIMATION
     */
+    public static readonly string PLAYER_ATTACK_1 = "player_attack_1";
+    public static readonly string PLAYER_ATTACK_2 = "player_attack_2";
+    public static readonly string PLAYER_ATTACK_3 = "player_attack_3";
 }
 
 public static class TscnNodeName

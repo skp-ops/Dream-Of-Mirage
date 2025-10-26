@@ -21,7 +21,7 @@ public partial class FiniteStateMachine : Node
             {
                 mStates[s.Name] = s;
                 s.fsm = this;
-                s.StateReady();
+                s.StateInit();
                 s.StateExit(); // Ensure all states are exited initially
                 LogInfo($"State {s.Name} initialized.");
             }

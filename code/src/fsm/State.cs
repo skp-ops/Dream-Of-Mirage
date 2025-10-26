@@ -12,7 +12,7 @@ public partial class State : Node
 
     // Bind functions to FSM signals or other behaviors
     // Called during the node's lifecycle
-    public virtual void StateReady() { }
+    public virtual void StateInit() { }
 
     // _Process, _PhysicsProcess, _Input
     public virtual void StateUpdate(double delta) { }

@@ -28,7 +28,7 @@ public partial class BoarAttack : State
         Logger.LogInfo("Query Boar Node in [BoarAttack] State done...");
     }
 
-    public override void StateReady()
+    public override void StateInit()
     {
         try
         {
@@ -69,8 +69,13 @@ public partial class BoarAttack : State
         }
         if (playerCheck.IsColliding())
         {
-            cooldownTimer = 5f;
-            return;
+            var collider = playerCheck.GetCollider();
+            // 检测到玩家，重置攻击冷却时间
+            if (collider is Player player)
+            {
+                cooldownTimer = 5f;
+                return;
+            }
         }
     }
 

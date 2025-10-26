@@ -27,7 +27,7 @@ public partial class BoarIdle : State
         Logger.LogInfo("Query Boar Node in [BoarIdle] State done...");
     }
 
-    public override void StateReady()
+    public override void StateInit()
     {
         try
         {
@@ -76,8 +76,13 @@ public partial class BoarIdle : State
         // if player is detected, switch to attack state
         if (playerCheck.IsColliding())
         {
-            fsm.ChangeState(StateName.ATTACK);
-            return;
+            var collider = playerCheck.GetCollider();
+            // 防止穿透墙面攻击玩家
+            if (collider is Player player)
+            {
+                fsm.ChangeState(StateName.ATTACK);
+                return;
+            }
         }
         // after 1 seconds, switch to Walk state
         if (idleTimer >= 1.0f)

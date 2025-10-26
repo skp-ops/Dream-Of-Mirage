@@ -3,6 +3,8 @@ using System;
 
 public partial class Player : CharacterBody2D
 {
+	[Export]
+	public bool isComboEnabled;
 	public float speed;
 	public float jumpVelocity;
 	public float acceleration;
@@ -20,7 +22,7 @@ public partial class Player : CharacterBody2D
 	public override void _Ready()
 	{
 		speed = 100.0f;
-		jumpVelocity = -285.0f;
+		jumpVelocity = -240.0f;  // original -285.0f
 		acceleration = speed / 0.1f;
 		// initial state
 		jumpCount = 2;

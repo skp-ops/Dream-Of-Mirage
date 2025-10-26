@@ -20,7 +20,7 @@ public partial class Run : State
         Logger.LogInfo("Query Player Node in [Run] State done...");
     }
 
-    public override void StateReady()
+    public override void StateInit()
     {
         try
         {
@@ -96,6 +96,12 @@ public partial class Run : State
             // Prevent the same-frame buffered press from triggering another jump in Jump state
             Input.ActionRelease("KeyJump");
             fsm.ChangeState(StateName.JUMP);
+            return;
+        }
+        if (Input.IsActionJustPressed("KeyAttack"))
+        {
+            Input.ActionRelease("KeyAttack");
+            fsm.ChangeState(StateName.ATTACK_1);
             return;
         }
     }

@@ -37,7 +37,7 @@ public partial class Jump : State
         Logger.LogInfo("Query Player Node in [Jump] State done...");
     }
 
-    public override void StateReady()
+    public override void StateInit()
     {
         try
         {

@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class Idle : State
+public partial class Attack1 : State
 {
     // player node
     private Player player;
@@ -12,11 +12,11 @@ public partial class Idle : State
 
     public override void _Ready()
     {
-        player = this.GetParent().GetParent() as Player; // Idle -> FSM -> Player
+        player = this.GetParent().GetParent() as Player; // Attack1 -> FSM -> Player
         animationPlayer = player.GetNode<AnimationPlayer>(PlayerNodeName.ANIMATION);
         sprite = player.GetNode<Sprite2D>(PlayerNodeName.SPRITE2D);
         graphic = player.GetNode<Node2D>(PlayerNodeName.GRAPHIC);
-        Logger.LogInfo("Query Player Node in [Idle] State done...");
+        Logger.LogInfo("Query Player Node in [Attack_1] State done...");
     }
 
     public override void StateInit()
@@ -36,7 +36,8 @@ public partial class Idle : State
 
     public override void StateEnter()
     {
-        player.SetJumpCount(2);
+        player.Velocity = new Vector2(0, player.Velocity.Y);
+        animationPlayer.Play(AnimationSpecialName.PLAYER_ATTACK_1);
     }
 
     public override void StateExit()
@@ -45,30 +46,24 @@ public partial class Idle : State
 
     public override void StateUpdate(double delta)
     {
-        float direction = Input.GetAxis("KeyLeft", "KeyRight");
-        if (direction != 0)
-        {
-            fsm.ChangeState(StateName.RUN);
-            return;
-        }
         if (player.IsOnFloor() == false)
         {
             fsm.ChangeState(StateName.FALL);
+            return;
+        }
+
+        float direction = Input.GetAxis("KeyLeft", "KeyRight");
+        if ((player.Velocity.X == 0) && (direction == 0) && (animationPlayer.CurrentAnimation != AnimationSpecialName.PLAYER_ATTACK_1))
+        {
+            fsm.ChangeState(StateName.IDLE);
             return;
         }
     }
 
     public override void StatePhysicsUpdate(double delta)
     {
-        // Apply gravity when in air and decelerate horizontally to 0 while idling
-        player.HandleGravity(delta);
-
-        // smoothly play idle animation
-        if (animationPlayer.CurrentAnimation != AnimationName.IDLE)
-        {
-            animationPlayer.Play(AnimationName.IDLE);
-        }
         player.MoveAndSlide();
+        player.HandleGravity(delta);
     }
 
     public override void StateHandleInput(InputEvent @event)
@@ -80,14 +75,39 @@ public partial class Idle : State
 
         if (Input.IsActionJustPressed("KeyJump"))
         {
+            // Give a vertical velocity boost for the jump, then switch to Jump state
             player.Velocity = new Vector2(player.Velocity.X, player.jumpVelocity);
+            // Prevent the same-frame buffered press from triggering another jump in Jump state
             Input.ActionRelease("KeyJump");
             fsm.ChangeState(StateName.JUMP);
             return;
         }
-        if (Input.IsActionJustPressed("KeyAttack"))
+
+        /*
+        combo attack input handling
+        */
+
+        if (Input.IsActionJustPressed("KeyAttack") && player.isComboEnabled)
         {
-            fsm.ChangeState(StateName.ATTACK_1);
+            Input.ActionRelease("KeyAttack");
+            fsm.ChangeState(StateName.ATTACK_2);
+            return;
+        }
+
+        /*
+        Change direction while attacking
+        */
+
+        float direction = Input.GetAxis("KeyLeft", "KeyRight");
+        if (direction != 0)
+        {
+            graphic.Scale = new Vector2(direction < 0 ? -1 : 1, 1);
+        }
+
+        // 长按方向键移动
+        if ((Input.IsActionPressed("KeyLeft") || Input.IsActionPressed("KeyRight")) && player.isComboEnabled)
+        {
+            fsm.ChangeState(StateName.RUN);
             return;
         }
     }

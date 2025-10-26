@@ -25,7 +25,7 @@ public partial class BoarWalk : State
         Logger.LogInfo("Query Boar Node in [BoarWalk] State done...");
     }
 
-    public override void StateReady()
+    public override void StateInit()
     {
         try
         {
@@ -56,8 +56,13 @@ public partial class BoarWalk : State
         // if player is detected, switch to attack state
         if (playerCheck.IsColliding())
         {
-            fsm.ChangeState(StateName.ATTACK);
-            return;
+            var collider = playerCheck.GetCollider();
+            // 防止穿透墙面攻击玩家
+            if (collider is Player player)
+            {
+                fsm.ChangeState(StateName.ATTACK);
+                return;
+            }
         }
         floorCheck.ForceRaycastUpdate();
         wallCheck.ForceRaycastUpdate();

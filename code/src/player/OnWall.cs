@@ -22,7 +22,7 @@ public partial class OnWall : State
         Logger.LogInfo("Query Player Node in [OnWall] State done...");
     }
 
-    public override void StateReady()
+    public override void StateInit()
     {
         try
         {

@@ -10,7 +10,6 @@ public partial class Fall : State
     private Sprite2D sprite;
     private Node2D graphic;
     // Reference to Jump state for shared jump counters
-    private Jump jumpState;
     private RayCast2D handCheck;
     private RayCast2D footCheck;
 
@@ -24,7 +23,7 @@ public partial class Fall : State
         footCheck = player.GetNode<RayCast2D>(PlayerNodeName.FOOT_CHECK);
     }
 
-    public override void StateReady()
+    public override void StateInit()
     {
         try
         {
@@ -32,7 +31,6 @@ public partial class Fall : State
             Assert.IsNoneNode<AnimationPlayer>(animationPlayer);
             Assert.IsNoneNode<Sprite2D>(sprite);
             Assert.IsNoneNode<Node2D>(graphic);
-            Assert.IsNoneNode<Jump>(jumpState);
             Assert.IsNoneNode<RayCast2D>(handCheck);
             Assert.IsNoneNode<RayCast2D>(footCheck);
         }
