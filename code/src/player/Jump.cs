@@ -88,14 +88,6 @@ public partial class Jump : State
         jumpBufferCounter = 0f;
     }
 
-    private void HandleGravity(double delta)
-    {
-        if (!player.IsOnFloor())
-        {
-            player.Velocity += new Vector2(0, ConstVar.GRAVITY * (float)delta);
-        }
-    }
-
     public override void StatePhysicsUpdate(double delta)
     {
         float direction = Input.GetAxis("KeyLeft", "KeyRight");
@@ -138,7 +130,7 @@ public partial class Jump : State
         // update the previous frame's on-floor status
         wasOnFloor = player.IsOnFloor();
         // gravity
-        HandleGravity(delta);
+        player.HandleGravity(delta);
 
         if (animationPlayer.CurrentAnimation != AnimationName.JUMP)
             animationPlayer.Play(AnimationName.JUMP);

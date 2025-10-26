@@ -58,18 +58,10 @@ public partial class Idle : State
         }
     }
 
-    private void HandleGravity(double delta)
-    {
-        if (!player.IsOnFloor())
-        {
-            player.Velocity += new Vector2(0, ConstVar.GRAVITY * (float)delta);
-        }
-    }
-
     public override void StatePhysicsUpdate(double delta)
     {
         // Apply gravity when in air and decelerate horizontally to 0 while idling
-        HandleGravity(delta);
+        player.HandleGravity(delta);
 
         // smoothly play idle animation
         if (animationPlayer.CurrentAnimation != AnimationName.IDLE)

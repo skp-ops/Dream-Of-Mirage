@@ -45,13 +45,17 @@ public partial class Player : CharacterBody2D
 	public void SetJumpCount(int count)
 	{
 		jumpCount = count;
+		if (jumpCount < 0)
+		{
+			jumpCount = 0;
+		}
 	}
 
 	public void HandleGravity(double delta)
-    {
-        if (!this.IsOnFloor())
-        {
-            this.Velocity += new Vector2(0, ConstVar.GRAVITY * (float)delta);
-        }
-    }
+	{
+		if (!this.IsOnFloor())
+		{
+			this.Velocity += new Vector2(0, ConstVar.GRAVITY * (float)delta);
+		}
+	}
 }

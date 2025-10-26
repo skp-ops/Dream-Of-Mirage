@@ -42,7 +42,9 @@ public static class StateName
 
 public static class AnimationName
 {
-    // Player Animation Names
+    /*
+    common animation names, the actual names should match the ones in AnimationPlayer nodes
+    */
     public static readonly string IDLE = "idle";
     public static readonly string RUN = "run";
     public static readonly string WALK = "walk";
@@ -50,15 +52,15 @@ public static class AnimationName
     public static readonly string FALL = "fall";
     public static readonly string ONWALL = "onwall";
     public static readonly string ATTACK = "attack";
+    public static readonly string HIT = "hit";
 }
 
-public static class MonsterAnimationName
+public static class AnimationSpecialName
 {
-    // Monster Animation Names
-    public static readonly string IDLE = "idle";
-    public static readonly string WALK = "walk";
-    public static readonly string ATTACK = "attack";
-    public static readonly string HIT = "hit";
+    /*
+    special animation names for specific enemies or players
+    OWNER_ANIMATION
+    */
 }
 
 public static class TscnNodeName

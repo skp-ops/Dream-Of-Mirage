@@ -79,14 +79,6 @@ public partial class Fall : State
         }
     }
 
-    private void HandleGravity(double delta)
-    {
-        if (player.IsOnFloor() == false)
-        {
-            player.Velocity += new Vector2(0, ConstVar.GRAVITY * (float)delta);
-        }
-    }
-
     public override void StatePhysicsUpdate(double delta)
     {
         float direction = Input.GetAxis("KeyLeft", "KeyRight");
@@ -102,7 +94,7 @@ public partial class Fall : State
         }
         player.Velocity = v;
 
-        HandleGravity(delta);
+        player.HandleGravity(delta);
         if (animationPlayer.CurrentAnimation != AnimationName.FALL)
         {
             animationPlayer.Play(AnimationName.FALL);
