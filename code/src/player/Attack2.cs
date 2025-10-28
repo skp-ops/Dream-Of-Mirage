@@ -37,10 +37,14 @@ public partial class Attack2 : State
     public override void StateEnter()
     {
         animationPlayer.Play(AnimationSpecialName.PLAYER_ATTACK_2);
+        // Subscribe to animation finished to decide post-attack fallback
+        animationPlayer.AnimationFinished += OnAttack2Finished;
     }
 
     public override void StateExit()
     {
+        // Unsubscribe to avoid duplicate handlers
+        animationPlayer.AnimationFinished -= OnAttack2Finished;
     }
 
     public override void StateUpdate(double delta)
@@ -48,6 +52,14 @@ public partial class Attack2 : State
         if (player.IsOnFloor() == false)
         {
             fsm.ChangeState(StateName.FALL);
+            return;
+        }
+
+        // Combo chaining while holding attack during movement
+        if (player.isComboEnabled && Input.IsActionPressed("KeyAttack"))
+        {
+            Input.ActionRelease("KeyAttack");
+            fsm.ChangeState(StateName.ATTACK_3);
             return;
         }
 
@@ -61,6 +73,12 @@ public partial class Attack2 : State
 
     public override void StatePhysicsUpdate(double delta)
     {
+        float direction = Input.GetAxis("KeyLeft", "KeyRight");
+        if (direction != 0)
+        {
+            graphic.Scale = new Vector2(direction < 0 ? -1 : 1, 1);
+        }
+        player.Velocity = new Vector2(direction * player.speed * 0.03f, player.Velocity.Y);
         player.MoveAndSlide();
         player.HandleGravity(delta);
     }
@@ -82,32 +100,30 @@ public partial class Attack2 : State
             return;
         }
 
-        /*
-        combo attack input handling
-        */
+        // combo chaining is handled in StateUpdate to work with held inputs reliably
+    }
 
-        if (Input.IsActionJustPressed("KeyAttack") && player.isComboEnabled)
+    private void OnAttack2Finished(StringName animName)
+    {
+        if (animName.ToString() != AnimationSpecialName.PLAYER_ATTACK_2)
         {
-            Input.ActionRelease("KeyAttack");
-            fsm.ChangeState(StateName.ATTACK_3);
             return;
         }
 
-        /*
-        Change direction while attacking
-        */
+        if (!player.IsOnFloor())
+        {
+            fsm.ChangeState(StateName.FALL);
+            return;
+        }
 
         float direction = Input.GetAxis("KeyLeft", "KeyRight");
         if (direction != 0)
         {
-            graphic.Scale = new Vector2(direction < 0 ? -1 : 1, 1);
-        }
-
-        // 长按方向键移动
-        if (Input.IsActionPressed("KeyLeft") || Input.IsActionPressed("KeyRight"))
-        {
             fsm.ChangeState(StateName.RUN);
-            return;
+        }
+        else
+        {
+            fsm.ChangeState(StateName.IDLE);
         }
     }
 }

@@ -38,10 +38,14 @@ public partial class Attack1 : State
     {
         player.Velocity = new Vector2(0, player.Velocity.Y);
         animationPlayer.Play(AnimationSpecialName.PLAYER_ATTACK_1);
+        // Subscribe to animation finished to decide post-attack fallback
+        animationPlayer.AnimationFinished += OnAttack1Finished;
     }
 
     public override void StateExit()
     {
+        // Unsubscribe to avoid duplicate handlers
+        animationPlayer.AnimationFinished -= OnAttack1Finished;
     }
 
     public override void StateUpdate(double delta)
@@ -49,6 +53,14 @@ public partial class Attack1 : State
         if (player.IsOnFloor() == false)
         {
             fsm.ChangeState(StateName.FALL);
+            return;
+        }
+
+        // Combo chaining while holding attack during movement
+        if (player.isComboEnabled && Input.IsActionPressed("KeyAttack"))
+        {
+            Input.ActionRelease("KeyAttack");
+            fsm.ChangeState(StateName.ATTACK_2);
             return;
         }
 
@@ -62,6 +74,14 @@ public partial class Attack1 : State
 
     public override void StatePhysicsUpdate(double delta)
     {
+        float direction = Input.GetAxis("KeyLeft", "KeyRight");
+        if (direction != 0)
+        {
+            graphic.Scale = new Vector2(direction < 0 ? -1 : 1, 1);
+        }
+        // small drift movement while attacking
+        player.Velocity = new Vector2(direction * player.speed * 0.03f, player.Velocity.Y);
+
         player.MoveAndSlide();
         player.HandleGravity(delta);
     }
@@ -83,32 +103,33 @@ public partial class Attack1 : State
             return;
         }
 
-        /*
-        combo attack input handling
-        */
+        // combo chaining is handled in StateUpdate to work with held inputs reliably
+    }
 
-        if (Input.IsActionJustPressed("KeyAttack") && player.isComboEnabled)
+    private void OnAttack1Finished(StringName animName)
+    {
+        // Only react to this state's animation finishing
+        if (animName.ToString() != AnimationSpecialName.PLAYER_ATTACK_1)
         {
-            Input.ActionRelease("KeyAttack");
-            fsm.ChangeState(StateName.ATTACK_2);
             return;
         }
 
-        /*
-        Change direction while attacking
-        */
+        // If we're no longer on floor, fall
+        if (!player.IsOnFloor())
+        {
+            fsm.ChangeState(StateName.FALL);
+            return;
+        }
 
+        // If holding direction, transition to RUN; otherwise IDLE
         float direction = Input.GetAxis("KeyLeft", "KeyRight");
         if (direction != 0)
         {
-            graphic.Scale = new Vector2(direction < 0 ? -1 : 1, 1);
-        }
-
-        // 长按方向键移动
-        if ((Input.IsActionPressed("KeyLeft") || Input.IsActionPressed("KeyRight")) && player.isComboEnabled)
-        {
             fsm.ChangeState(StateName.RUN);
-            return;
+        }
+        else
+        {
+            fsm.ChangeState(StateName.IDLE);
         }
     }
 }
