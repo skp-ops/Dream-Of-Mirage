@@ -139,5 +139,10 @@ public partial class Jump : State
 
     public override void StateHandleInput(InputEvent @event)
     {
+        if (Input.IsActionJustPressed("KeyAttack"))
+        {
+            fsm.ChangeState(StateName.ATTACK_1);
+            return;
+        }
     }
 }

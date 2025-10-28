@@ -36,7 +36,11 @@ public partial class Attack1 : State
 
     public override void StateEnter()
     {
-        player.Velocity = new Vector2(0, player.Velocity.Y);
+        // 保留空中动量：仅在落地时清零水平速度，避免空中攻击时改变X速度
+        if (player.IsOnFloor())
+        {
+            player.Velocity = new Vector2(0, player.Velocity.Y);
+        }
         animationPlayer.Play(AnimationSpecialName.PLAYER_ATTACK_1);
         // Subscribe to animation finished to decide post-attack fallback
         animationPlayer.AnimationFinished += OnAttack1Finished;
@@ -50,12 +54,6 @@ public partial class Attack1 : State
 
     public override void StateUpdate(double delta)
     {
-        if (player.IsOnFloor() == false)
-        {
-            fsm.ChangeState(StateName.FALL);
-            return;
-        }
-
         // Combo chaining while holding attack during movement
         if (player.isComboEnabled && Input.IsActionPressed("KeyAttack"))
         {
@@ -79,8 +77,11 @@ public partial class Attack1 : State
         {
             graphic.Scale = new Vector2(direction < 0 ? -1 : 1, 1);
         }
-        // small drift movement while attacking
-        player.Velocity = new Vector2(direction * player.speed * 0.03f, player.Velocity.Y);
+        // small drift movement while attacking on land
+        if (player.IsOnFloor())
+        {
+            player.Velocity = new Vector2(direction * player.speed * 0.03f, player.Velocity.Y);
+        }
 
         player.MoveAndSlide();
         player.HandleGravity(delta);

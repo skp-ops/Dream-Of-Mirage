@@ -111,5 +111,11 @@ public partial class Fall : State
             fsm.ChangeState(StateName.JUMP);
             return;
         }
+
+        if (Input.IsActionJustPressed("KeyAttack"))
+        {
+            fsm.ChangeState(StateName.ATTACK_1);
+            return;
+        }
     }
 }

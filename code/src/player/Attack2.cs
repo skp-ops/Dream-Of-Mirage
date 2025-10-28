@@ -49,12 +49,6 @@ public partial class Attack2 : State
 
     public override void StateUpdate(double delta)
     {
-        if (player.IsOnFloor() == false)
-        {
-            fsm.ChangeState(StateName.FALL);
-            return;
-        }
-
         // Combo chaining while holding attack during movement
         if (player.isComboEnabled && Input.IsActionPressed("KeyAttack"))
         {
@@ -78,7 +72,11 @@ public partial class Attack2 : State
         {
             graphic.Scale = new Vector2(direction < 0 ? -1 : 1, 1);
         }
-        player.Velocity = new Vector2(direction * player.speed * 0.03f, player.Velocity.Y);
+        // small drift movement while attacking on land
+        if (player.IsOnFloor())
+        {
+            player.Velocity = new Vector2(direction * player.speed * 0.03f, player.Velocity.Y);
+        }
         player.MoveAndSlide();
         player.HandleGravity(delta);
     }
