@@ -9,6 +9,7 @@ public partial class Attack1 : State
     private AnimationPlayer animationPlayer;
     private Sprite2D sprite;
     private Node2D graphic;
+    private bool isAnimFinishedConnected;
 
     public override void _Ready()
     {
@@ -36,20 +37,24 @@ public partial class Attack1 : State
 
     public override void StateEnter()
     {
-        // 保留空中动量：仅在落地时清零水平速度，避免空中攻击时改变X速度
-        if (player.IsOnFloor())
-        {
-            player.Velocity = new Vector2(0, player.Velocity.Y);
-        }
+        // 不再强制清零水平速度，地面也保留起手前的动量（更顺手）
         animationPlayer.Play(AnimationSpecialName.PLAYER_ATTACK_1);
         // Subscribe to animation finished to decide post-attack fallback
-        animationPlayer.AnimationFinished += OnAttack1Finished;
+        if (!isAnimFinishedConnected)
+        {
+            animationPlayer.AnimationFinished += OnAttack1Finished;
+            isAnimFinishedConnected = true;
+        }
     }
 
     public override void StateExit()
     {
         // Unsubscribe to avoid duplicate handlers
-        animationPlayer.AnimationFinished -= OnAttack1Finished;
+        if (isAnimFinishedConnected)
+        {
+            animationPlayer.AnimationFinished -= OnAttack1Finished;
+            isAnimFinishedConnected = false;
+        }
     }
 
     public override void StateUpdate(double delta)
@@ -77,11 +82,14 @@ public partial class Attack1 : State
         {
             graphic.Scale = new Vector2(direction < 0 ? -1 : 1, 1);
         }
-        // small drift movement while attacking on land
+        // small, soft drift movement on ground while attacking (preserve momentum and ease toward target)
+        var v = player.Velocity;
         if (player.IsOnFloor())
         {
-            player.Velocity = new Vector2(direction * player.speed * 0.03f, player.Velocity.Y);
+            float targetX = (direction != 0) ? (direction * player.speed * 0.3f) : 0f;
+            v.X = Mathf.MoveToward(v.X, targetX, player.acceleration * 0.3f * (float)delta);
         }
+        player.Velocity = v;
 
         player.MoveAndSlide();
         player.HandleGravity(delta);

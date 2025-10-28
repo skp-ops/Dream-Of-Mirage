@@ -9,6 +9,7 @@ public partial class Attack2 : State
     private AnimationPlayer animationPlayer;
     private Sprite2D sprite;
     private Node2D graphic;
+    private bool isAnimFinishedConnected;
 
     public override void _Ready()
     {
@@ -38,13 +39,21 @@ public partial class Attack2 : State
     {
         animationPlayer.Play(AnimationSpecialName.PLAYER_ATTACK_2);
         // Subscribe to animation finished to decide post-attack fallback
-        animationPlayer.AnimationFinished += OnAttack2Finished;
+        if (!isAnimFinishedConnected)
+        {
+            animationPlayer.AnimationFinished += OnAttack2Finished;
+            isAnimFinishedConnected = true;
+        }
     }
 
     public override void StateExit()
     {
         // Unsubscribe to avoid duplicate handlers
-        animationPlayer.AnimationFinished -= OnAttack2Finished;
+        if (isAnimFinishedConnected)
+        {
+            animationPlayer.AnimationFinished -= OnAttack2Finished;
+            isAnimFinishedConnected = false;
+        }
     }
 
     public override void StateUpdate(double delta)
@@ -72,11 +81,14 @@ public partial class Attack2 : State
         {
             graphic.Scale = new Vector2(direction < 0 ? -1 : 1, 1);
         }
-        // small drift movement while attacking on land
+        // small, soft drift movement on ground while attacking
+        var v = player.Velocity;
         if (player.IsOnFloor())
         {
-            player.Velocity = new Vector2(direction * player.speed * 0.03f, player.Velocity.Y);
+            float targetX = (direction != 0) ? (direction * player.speed * 0.3f) : 0f;
+            v.X = Mathf.MoveToward(v.X, targetX, player.acceleration * 0.3f * (float)delta);
         }
+        player.Velocity = v;
         player.MoveAndSlide();
         player.HandleGravity(delta);
     }
