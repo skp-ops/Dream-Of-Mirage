@@ -87,7 +87,7 @@ public partial class Attack3 : State
         var v = player.Velocity;
         if (player.IsOnFloor())
         {
-            float targetX = (direction != 0) ? (direction * player.speed * 0.3f) : 0f;
+            float targetX = (direction != 0) ? (direction * player.speed * 0.1f) : 0f;
             v.X = Mathf.MoveToward(v.X, targetX, player.acceleration * 0.3f * (float)delta);
         }
         player.Velocity = v;

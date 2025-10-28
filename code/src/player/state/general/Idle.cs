@@ -85,7 +85,7 @@ public partial class Idle : State
             fsm.ChangeState(StateName.JUMP);
             return;
         }
-        if (Input.IsActionJustPressed("KeyAttack"))
+        if (Input.IsActionPressed("KeyAttack"))
         {
             fsm.ChangeState(StateName.ATTACK_1);
             return;

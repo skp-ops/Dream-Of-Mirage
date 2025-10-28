@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class Run : State
+public partial class Attack2 : State
 {
     // player node
     private Player player;
@@ -9,15 +9,15 @@ public partial class Run : State
     private AnimationPlayer animationPlayer;
     private Sprite2D sprite;
     private Node2D graphic;
-
+    private bool isAnimFinishedConnected;
 
     public override void _Ready()
     {
-        player = this.GetParent().GetParent() as Player; // Run -> FSM -> Player
+        player = this.GetParent().GetParent() as Player; // Attack2 -> FSM -> Player
         animationPlayer = player.GetNode<AnimationPlayer>(PlayerNodeName.ANIMATION);
         sprite = player.GetNode<Sprite2D>(PlayerNodeName.SPRITE2D);
         graphic = player.GetNode<Node2D>(PlayerNodeName.GRAPHIC);
-        Logger.LogInfo("Query Player Node in [Run] State done...");
+        Logger.LogInfo("Query Player Node in [Attack_2] State done...");
     }
 
     public override void StateInit()
@@ -37,23 +37,37 @@ public partial class Run : State
 
     public override void StateEnter()
     {
-        player.SetJumpCount(2);
+        animationPlayer.Play(AnimationSpecialName.PLAYER_ATTACK_2);
+        // Subscribe to animation finished to decide post-attack fallback
+        if (!isAnimFinishedConnected)
+        {
+            animationPlayer.AnimationFinished += OnAttack2Finished;
+            isAnimFinishedConnected = true;
+        }
     }
 
     public override void StateExit()
     {
+        // Unsubscribe to avoid duplicate handlers
+        if (isAnimFinishedConnected)
+        {
+            animationPlayer.AnimationFinished -= OnAttack2Finished;
+            isAnimFinishedConnected = false;
+        }
     }
 
     public override void StateUpdate(double delta)
     {
-        if (player.IsOnFloor() == false)
+        // Combo chaining while holding attack during movement
+        if (player.isComboEnabled && Input.IsActionPressed("KeyAttack"))
         {
-            fsm.ChangeState(StateName.FALL);
+            Input.ActionRelease("KeyAttack");
+            fsm.ChangeState(StateName.ATTACK_3);
             return;
         }
 
         float direction = Input.GetAxis("KeyLeft", "KeyRight");
-        if ((player.Velocity.X == 0) && (direction == 0))
+        if ((player.Velocity.X == 0) && (direction == 0) && (animationPlayer.CurrentAnimation != AnimationSpecialName.PLAYER_ATTACK_2))
         {
             fsm.ChangeState(StateName.IDLE);
             return;
@@ -62,24 +76,21 @@ public partial class Run : State
 
     public override void StatePhysicsUpdate(double delta)
     {
-        Vector2 velocity = player.Velocity;
         float direction = Input.GetAxis("KeyLeft", "KeyRight");
-        // horizontal movement
         if (direction != 0)
         {
             graphic.Scale = new Vector2(direction < 0 ? -1 : 1, 1);
-            velocity.X = Mathf.MoveToward(velocity.X, direction * player.speed, player.acceleration * (float)delta);
         }
-        else
+        // small, soft drift movement on ground while attacking
+        var v = player.Velocity;
+        if (player.IsOnFloor())
         {
-            velocity.X = Mathf.MoveToward(velocity.X, 0, player.acceleration * (float)delta);
+            float targetX = (direction != 0) ? (direction * player.speed * 0.1f) : 0f;
+            v.X = Mathf.MoveToward(v.X, targetX, player.acceleration * 0.3f * (float)delta);
         }
-        player.Velocity = velocity;
-        if (animationPlayer.CurrentAnimation != AnimationName.RUN)
-        {
-            animationPlayer.Play(AnimationName.RUN);
-        }
+        player.Velocity = v;
         player.MoveAndSlide();
+        player.HandleGravity(delta);
     }
 
     public override void StateHandleInput(InputEvent @event)
@@ -98,11 +109,31 @@ public partial class Run : State
             fsm.ChangeState(StateName.JUMP);
             return;
         }
-        if (Input.IsActionJustPressed("KeyAttack"))
+
+        // combo chaining is handled in StateUpdate to work with held inputs reliably
+    }
+
+    private void OnAttack2Finished(StringName animName)
+    {
+        if (animName.ToString() != AnimationSpecialName.PLAYER_ATTACK_2)
         {
-            Input.ActionRelease("KeyAttack");
-            fsm.ChangeState(StateName.ATTACK_1);
             return;
+        }
+
+        if (!player.IsOnFloor())
+        {
+            fsm.ChangeState(StateName.FALL);
+            return;
+        }
+
+        float direction = Input.GetAxis("KeyLeft", "KeyRight");
+        if (direction != 0)
+        {
+            fsm.ChangeState(StateName.RUN);
+        }
+        else
+        {
+            fsm.ChangeState(StateName.IDLE);
         }
     }
 }
