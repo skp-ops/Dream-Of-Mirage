@@ -4,14 +4,24 @@ using Godot;
 [GlobalClass]
 public partial class HitBox : Area2D
 {
-    // 可以在这里定义属性、方法和信号等
-    [Export]
-    public int Health { get; set; } = 100;
+    [Signal]
+    public delegate void HitEventHandler(HurtBox hurtBox);
 
     public override void _Ready()
     {
-        GD.Print("HitBox is ready!");
+        AreaEntered += OnAreaEntered;
     }
 
-    // ... 其他代码 ...
+    public void OnAreaEntered(Area2D area)
+    {
+        if (area is HurtBox hurtBox)
+        {
+            EmitSignal(SignalName.Hit, hurtBox);
+            // 打印 hitbox 的owner 和 hurtbox 的 owner 名称以便调试
+            GD.Print("HitBox Owner: " + this.GetOwner().Name + ", HurtBox Owner: " + hurtBox.GetOwner().Name);
+            hurtBox.EmitSignal(HurtBox.SignalName.Hurt, this);
+        }
+    }
+
+
 }

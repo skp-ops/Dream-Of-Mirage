@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://f0b0tlnef2m5"]
+[gd_scene load_steps=5 format=3 uid="uid://f0b0tlnef2m5"]
 
 [ext_resource type="Script" uid="uid://c5ld82xiufg3h" path="res://code/src/Enemy/Monster/Monster.cs" id="1_cdwbn"]
 [ext_resource type="Script" uid="uid://cd5h0w2v2de2k" path="res://code/src/fsm/FiniteStateMachine.cs" id="2_sylls"]
+[ext_resource type="Script" uid="uid://bf2l5lc500enu" path="res://code/src/global/HitBox.cs" id="2_t7lwh"]
+[ext_resource type="Script" uid="uid://b37cl6f7j3pp" path="res://code/src/global/HurtBox.cs" id="3_t7lwh"]
 
 [node name="Monster" type="CharacterBody2D"]
 collision_layer = 4
@@ -10,6 +12,18 @@ script = ExtResource("1_cdwbn")
 [node name="Graphic" type="Node2D" parent="."]
 
 [node name="Sprite2D" type="Sprite2D" parent="Graphic"]
+
+[node name="HitBox" type="Area2D" parent="Graphic"]
+collision_layer = 0
+collision_mask = 8
+script = ExtResource("2_t7lwh")
+metadata/_custom_type_script = "uid://bf2l5lc500enu"
+
+[node name="HurtBox" type="Area2D" parent="Graphic"]
+collision_layer = 16
+collision_mask = 0
+script = ExtResource("3_t7lwh")
+metadata/_custom_type_script = "uid://b37cl6f7j3pp"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 

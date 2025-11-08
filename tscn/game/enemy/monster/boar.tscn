@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://bv0ditemi0vut"]
+[gd_scene load_steps=19 format=3 uid="uid://bv0ditemi0vut"]
 
 [ext_resource type="PackedScene" uid="uid://f0b0tlnef2m5" path="res://tscn/game/enemy/monster/monster.tscn" id="1_t2ko8"]
 [ext_resource type="Script" uid="uid://y1ior5o6ogcm" path="res://code/src/Enemy/Monster/Boar/Boar.cs" id="2_sm2v0"]
@@ -9,6 +9,12 @@
 [ext_resource type="Script" uid="uid://vyhojg18gjus" path="res://code/src/Enemy/Monster/Boar/BoarIdle.cs" id="6_v7xlp"]
 [ext_resource type="Script" uid="uid://pgruoqa28ppq" path="res://code/src/Enemy/Monster/Boar/BoarWalk.cs" id="8_5k48w"]
 [ext_resource type="Script" uid="uid://ct5o4oja78p22" path="res://code/src/Enemy/Monster/Boar/BoarAttack.cs" id="9_rjv2q"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6gdf2"]
+size = Vector2(19, 6.75)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rjv2q"]
+size = Vector2(18, 11.5)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_v7xlp"]
 radius = 7.071068
@@ -299,6 +305,16 @@ collision_mask = 3
 [node name="FloorCheck" type="RayCast2D" parent="Graphic" index="3"]
 position = Vector2(-5, 0)
 target_position = Vector2(0, 6)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Graphic/HitBox" index="0"]
+position = Vector2(2, -4)
+shape = SubResource("RectangleShape2D_6gdf2")
+debug_color = Color(0.89798, 0.0335171, 0.761016, 0.41960785)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Graphic/HurtBox" index="0"]
+position = Vector2(2, -6)
+shape = SubResource("RectangleShape2D_rjv2q")
+debug_color = Color(0.89798, 0.0335171, 0.761016, 0.41960785)
 
 [node name="CollisionShape2D" parent="." index="1"]
 position = Vector2(2, -7)

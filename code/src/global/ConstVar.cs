@@ -12,6 +12,8 @@ public static class PlayerNodeName
     public static readonly string SPRITE2D = "Graphic/Sprite2D";
     public static readonly string HAND_CHECK = "Graphic/HandCheck";
     public static readonly string FOOT_CHECK = "Graphic/FootCheck";
+    public static readonly string HITBOX = "Graphic/HitBox";
+    public static readonly string HURTBOX = "Graphic/HurtBox";
     public static readonly string ANIMATION = "AnimationPlayer";
     public static readonly string CAMERA = "Camera2D";
 }
