@@ -13,7 +13,7 @@ public partial class BoarHit : State
     private bool isAnimFinishedConnected = false;
 
     // Knockback parameters
-    private float knockbackForce = 100f;
+    private float knockbackForce = 50f;
     private float knockbackDecay = 5f;
     private float currentKnockbackSpeed = 0f;
 

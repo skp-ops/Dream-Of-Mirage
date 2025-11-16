@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://bv0ditemi0vut"]
+[gd_scene load_steps=22 format=3 uid="uid://bv0ditemi0vut"]
 
 [ext_resource type="PackedScene" uid="uid://f0b0tlnef2m5" path="res://tscn/game/enemy/monster/monster.tscn" id="1_t2ko8"]
 [ext_resource type="Script" uid="uid://y1ior5o6ogcm" path="res://code/src/Enemy/Monster/Boar/Boar.cs" id="2_sm2v0"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://pgruoqa28ppq" path="res://code/src/Enemy/Monster/Boar/BoarWalk.cs" id="8_5k48w"]
 [ext_resource type="Script" uid="uid://ct5o4oja78p22" path="res://code/src/Enemy/Monster/Boar/BoarAttack.cs" id="9_rjv2q"]
 [ext_resource type="Script" uid="uid://msdmt480sumb" path="res://code/src/Enemy/Monster/Boar/BoarHit.cs" id="10_6gdf2"]
+[ext_resource type="Script" uid="uid://ck16uogi8l0up" path="res://code/src/Enemy/Monster/Boar/BoarDie.cs" id="11_s0xpu"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6gdf2"]
 size = Vector2(19, 6.75)
@@ -405,3 +406,6 @@ script = ExtResource("9_rjv2q")
 
 [node name="Hit" parent="FSM" index="3"]
 script = ExtResource("10_6gdf2")
+
+[node name="Die" type="Node" parent="FSM" index="4"]
+script = ExtResource("11_s0xpu")

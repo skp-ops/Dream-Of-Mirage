@@ -42,6 +42,7 @@ public static class StateName
     public static readonly string ONWALL = "OnWall";
     public static readonly string ATTACK = "Attack";
     public static readonly string HIT = "Hit";
+    public static readonly string DIE = "Die";
     public static readonly string ATTACK_1 = "Attack_1";
     public static readonly string ATTACK_2 = "Attack_2";
     public static readonly string ATTACK_3 = "Attack_3";

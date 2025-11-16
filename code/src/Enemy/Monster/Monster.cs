@@ -88,10 +88,7 @@ public partial class Monster : CharacterBody2D
     public void TakeDamage(int damage)
     {
         CurHP -= damage;
-        if (CurHP <= 0)
-        {
-            Die();
-        }
+        // Don't call Die() here, let subclass handle it in OnHurt
     }
 
     protected virtual void Die()
