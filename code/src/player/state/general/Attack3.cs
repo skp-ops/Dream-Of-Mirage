@@ -8,7 +8,6 @@ public partial class Attack3 : State
     // AnimationPlayer and Sprite2D
     private AnimationPlayer animationPlayer;
     private Sprite2D sprite;
-    private Node2D graphic;
     private bool isAnimFinishedConnected;
 
     public override void _Ready()
@@ -16,7 +15,6 @@ public partial class Attack3 : State
         player = this.GetParent().GetParent() as Player; // Attack3 -> FSM -> Player
         animationPlayer = player.GetNode<AnimationPlayer>(PlayerNodeName.ANIMATION);
         sprite = player.GetNode<Sprite2D>(PlayerNodeName.SPRITE2D);
-        graphic = player.GetNode<Node2D>(PlayerNodeName.GRAPHIC);
         Logger.LogInfo("Query Player Node in [Attack_3] State done...");
     }
 
@@ -27,7 +25,6 @@ public partial class Attack3 : State
             Assert.IsNoneNode<Player>(player);
             Assert.IsNoneNode<AnimationPlayer>(animationPlayer);
             Assert.IsNoneNode<Sprite2D>(sprite);
-            Assert.IsNoneNode<Node2D>(graphic);
         }
         catch (NullReferenceException ex)
         {
@@ -78,19 +75,11 @@ public partial class Attack3 : State
 
     public override void StatePhysicsUpdate(double delta)
     {
-        float direction = Input.GetAxis("KeyLeft", "KeyRight");
-        if (direction != 0)
-        {
-            graphic.Scale = new Vector2(direction < 0 ? -1 : 1, 1);
-        }
-        // small, soft drift movement on ground while attacking
-        var v = player.Velocity;
+        // 地面攻击时停止水平移动，空中攻击保留水平速度
         if (player.IsOnFloor())
         {
-            float targetX = (direction != 0) ? (direction * player.speed * 0.1f) : 0f;
-            v.X = Mathf.MoveToward(v.X, targetX, player.acceleration * 0.3f * (float)delta);
+            player.Velocity = new Vector2(0, player.Velocity.Y);
         }
-        player.Velocity = v;
         player.MoveAndSlide();
         player.HandleGravity(delta);
     }

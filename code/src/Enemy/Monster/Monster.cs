@@ -20,23 +20,31 @@ public partial class Monster : CharacterBody2D
         }
     }
     // [Export]
-    public virtual float speed { get; set; }
+    public virtual float Speed { get; set; }
 
-    public int curHP;
-    public int maxHP;
-    // public float speed;
-    public float acceleration;
+    // Health properties
+    [Export]
+    public int MaxHP { get; set; }
+
+    private int _curHP;
+    [Export]
+    public int CurHP
+    {
+        get => _curHP;
+        set => _curHP = Mathf.Clamp(value, 0, MaxHP);
+    }
+
     public readonly float gravity = ConstVar.GRAVITY;
     private Node2D graphic;
+    private HurtBox hurtBox;
 
     public enum Direction { Left = -1, Right = 1 }
 
     public override void _Ready()
     {
-        maxHP = 100;
-        curHP = maxHP;
-        speed = 50.0f;
-        acceleration = speed / 0.1f;
+        // Initialize current HP
+        CurHP = MaxHP;
+
         graphic = GetNode<Node2D>(EnemyNodeName.GRAPHIC);
         try
         {
@@ -46,9 +54,20 @@ public partial class Monster : CharacterBody2D
         {
             Logger.LogError("Node is null: " + ex.Message);
         }
+
+        // Find and bind HurtBox (search recursively in children)
+        hurtBox = FindChildByType<HurtBox>(this);
+        if (hurtBox != null)
+        {
+            hurtBox.Hurt += OnHurt;
+        }
+        else
+        {
+            Logger.LogWarning($"HurtBox not found for {Name}");
+        }
+
         // Ensure initial facing logic is applied
         OnDirectionChanged();
-
     }
 
     public override void _Process(double delta)
@@ -61,20 +80,23 @@ public partial class Monster : CharacterBody2D
         MoveAndSlide();
     }
 
-    // Method to apply damage to the monster
-    public void ApplyDamage(int damage)
+    protected virtual void OnHurt(HitBox hitBox)
     {
-        curHP -= damage;
-        if (curHP <= 0)
+        return;
+    }
+
+    public void TakeDamage(int damage)
+    {
+        CurHP -= damage;
+        if (CurHP <= 0)
         {
             Die();
         }
     }
 
-    // Method to handle monster death
-    private void Die()
+    protected virtual void Die()
     {
-        QueueFree(); // Remove the monster from the scene
+        return;
     }
 
     // Hook invoked whenever direction changes (editor or runtime). Subclasses can override.
@@ -86,4 +108,22 @@ public partial class Monster : CharacterBody2D
     // Optional explicit accessors if you prefer method style
     public Direction GetDirection() => Dir;
     public void SetDirection(Direction d) => Dir = d;
+
+    // Helper method to find child node by type recursively
+    protected T FindChildByType<T>(Node parent) where T : class
+    {
+        foreach (Node child in parent.GetChildren())
+        {
+            if (child is T typedChild)
+            {
+                return typedChild;
+            }
+            var result = FindChildByType<T>(child);
+            if (result != null)
+            {
+                return result;
+            }
+        }
+        return null;
+    }
 }

@@ -112,4 +112,9 @@ public partial class FiniteStateMachine : Node
         }
         mCurrentState?.StateEnter();
     }
+
+    public string GetCurrentStateName()
+    {
+        return mCurrentState?.Name;
+    }
 }

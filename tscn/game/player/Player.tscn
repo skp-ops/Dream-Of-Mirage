@@ -837,6 +837,7 @@ scale = Vector2(1.4831357, -0.5075307)
 target_position = Vector2(-5, 0)
 
 [node name="HurtBox" type="Area2D" parent="Graphic"]
+visible = false
 collision_layer = 8
 collision_mask = 0
 script = ExtResource("3_423o2")
@@ -848,6 +849,7 @@ shape = SubResource("RectangleShape2D_423o2")
 debug_color = Color(0.8185342, 0.16888034, 0.06833908, 0.41960785)
 
 [node name="HitBox" type="Area2D" parent="Graphic"]
+visible = false
 collision_layer = 0
 collision_mask = 16
 script = ExtResource("4_a3wj7")

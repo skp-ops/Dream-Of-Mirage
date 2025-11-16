@@ -18,6 +18,7 @@ public partial class Player : CharacterBody2D
 	// Jump buffer
 	public float jumpBufferTime;
 	public float jumpBufferCounter;
+	private Node2D graphic;
 
 	public override void _Ready()
 	{
@@ -29,6 +30,7 @@ public partial class Player : CharacterBody2D
 		wasOnFloor = IsOnFloor();
 		jumpBufferTime = 0.15f;
 		jumpBufferCounter = 0f;
+		graphic = this.GetNode<Node2D>(PlayerNodeName.GRAPHIC);
 	}
 
 	public override void _Process(double delta)
@@ -58,6 +60,15 @@ public partial class Player : CharacterBody2D
 		if (!this.IsOnFloor())
 		{
 			this.Velocity += new Vector2(0, ConstVar.GRAVITY * (float)delta);
+		}
+	}
+
+	public void EnableTurnDirection()
+	{
+		float direction = Input.GetAxis("KeyLeft", "KeyRight");
+		if (direction != 0)
+		{
+			graphic.Scale = new Vector2(direction < 0 ? -1 : 1, 1);
 		}
 	}
 }

@@ -11,5 +11,9 @@ public partial class HurtBox : Area2D
     {
     }
 
+    public void OnHurt(HitBox hitBox)
+    {
+        GD.Print($"HurtBox was hit by {hitBox.Name}!");
+    }
 
 }

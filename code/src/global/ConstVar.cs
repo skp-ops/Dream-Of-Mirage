@@ -27,6 +27,8 @@ public static class EnemyNodeName
     public static readonly string WALL_CHECK = "Graphic/WallCheck";
     public static readonly string FLOOR_CHECK = "Graphic/FloorCheck";
     public static readonly string PLAYER_CHECK = "Graphic/PlayerCheck";
+    public static readonly string HURTBOX = "Graphic/HurtBox";
+    public static readonly string HITBOX = "Graphic/HitBox";
 }
 
 public static class StateName
@@ -58,6 +60,7 @@ public static class AnimationName
     public static readonly string ONWALL = "onwall";
     public static readonly string ATTACK = "attack";
     public static readonly string HIT = "hit";
+    public static readonly string DIE = "die";
 }
 
 public static class AnimationSpecialName

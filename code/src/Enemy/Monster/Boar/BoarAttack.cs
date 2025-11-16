@@ -48,15 +48,15 @@ public partial class BoarAttack : State
 
     public override void StateEnter()
     {
-        originalSpeed = bNode.speed;
-        bNode.speed = 30f;
+        originalSpeed = bNode.Speed;
+        bNode.Speed = 30f;
         cooldownTimer = 5f;
     }
 
     public override void StateExit()
     {
         cooldownTimer = 5f;
-        bNode.speed = originalSpeed;
+        bNode.Speed = originalSpeed;
     }
 
     public override void StateUpdate(double delta)
@@ -89,7 +89,7 @@ public partial class BoarAttack : State
 
     public override void StatePhysicsUpdate(double delta)
     {
-        bNode.Velocity = new Vector2(bNode.speed * graphic.Scale.X * -1, bNode.Velocity.Y);
+        bNode.Velocity = new Vector2(bNode.Speed * graphic.Scale.X * -1, bNode.Velocity.Y);
         HandleGravity(delta);
         // if wall is detected or if no floor ahead, just turn around
         if (wallCheck.IsColliding() || !floorCheck.IsColliding())

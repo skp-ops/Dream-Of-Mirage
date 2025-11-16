@@ -84,7 +84,7 @@ public partial class BoarWalk : State
 
     public override void StatePhysicsUpdate(double delta)
     {
-        bNode.Velocity = new Vector2(bNode.speed * graphic.Scale.X * -1, bNode.Velocity.Y);
+        bNode.Velocity = new Vector2(bNode.Speed * graphic.Scale.X * -1, bNode.Velocity.Y);
         HandleGravity(delta);
         if (animationPlayer.CurrentAnimation != AnimationName.WALK)
         {

@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://bv0ditemi0vut"]
+[gd_scene load_steps=21 format=3 uid="uid://bv0ditemi0vut"]
 
 [ext_resource type="PackedScene" uid="uid://f0b0tlnef2m5" path="res://tscn/game/enemy/monster/monster.tscn" id="1_t2ko8"]
 [ext_resource type="Script" uid="uid://y1ior5o6ogcm" path="res://code/src/Enemy/Monster/Boar/Boar.cs" id="2_sm2v0"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://vyhojg18gjus" path="res://code/src/Enemy/Monster/Boar/BoarIdle.cs" id="6_v7xlp"]
 [ext_resource type="Script" uid="uid://pgruoqa28ppq" path="res://code/src/Enemy/Monster/Boar/BoarWalk.cs" id="8_5k48w"]
 [ext_resource type="Script" uid="uid://ct5o4oja78p22" path="res://code/src/Enemy/Monster/Boar/BoarAttack.cs" id="9_rjv2q"]
+[ext_resource type="Script" uid="uid://msdmt480sumb" path="res://code/src/Enemy/Monster/Boar/BoarHit.cs" id="10_6gdf2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6gdf2"]
 size = Vector2(19, 6.75)
@@ -68,6 +69,18 @@ tracks/3/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [0]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Graphic:modulate")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
 }
 
 [sub_resource type="Animation" id="Animation_gqn5p"]
@@ -273,10 +286,64 @@ tracks/3/keys = {
 "values": [Vector2(2, -8)]
 }
 
+[sub_resource type="Animation" id="Animation_rjv2q"]
+resource_name = "die"
+length = 0.4
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Graphic/Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("5_gqn5p")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Graphic/Sprite2D:hframes")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [4]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Graphic/Sprite2D:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Graphic:modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_gqn5p"]
 _data = {
 &"RESET": SubResource("Animation_r34vd"),
 &"attack": SubResource("Animation_gqn5p"),
+&"die": SubResource("Animation_rjv2q"),
 &"hit": SubResource("Animation_sm2v0"),
 &"idle": SubResource("Animation_v7xlp"),
 &"walk": SubResource("Animation_medwt")
@@ -285,6 +352,8 @@ _data = {
 [node name="Boar" instance=ExtResource("1_t2ko8")]
 position = Vector2(-2, 0)
 script = ExtResource("2_sm2v0")
+MaxHP = 10
+CurHP = 10
 
 [node name="Sprite2D" parent="Graphic" index="0"]
 position = Vector2(0, -16)
@@ -333,3 +402,6 @@ script = ExtResource("8_5k48w")
 
 [node name="Attack" parent="FSM" index="2"]
 script = ExtResource("9_rjv2q")
+
+[node name="Hit" parent="FSM" index="3"]
+script = ExtResource("10_6gdf2")
